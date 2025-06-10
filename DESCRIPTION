@@ -1,5 +1,5 @@
 Package: de.helpers
-Title: What the Package Does (One Line, Title Case)
+Title: Functions to help with my differential expression and differential translational efficiency projects
 Version: 0.0.0.9000
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
