@@ -1,2 +1,4 @@
+^renv$
+^renv\.lock$
 ^de\.helpers\.Rproj$
 ^\.Rproj\.user$
