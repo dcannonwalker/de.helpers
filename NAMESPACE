@@ -2,3 +2,5 @@
 
 export(estimate_parameters)
 importFrom(edgeR,DGEList)
+importFrom(edgeR,calcNormFactors)
+importFrom(edgeR,estimateDisp)
