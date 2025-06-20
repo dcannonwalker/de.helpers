@@ -8,7 +8,7 @@
 #' @export
 estimate_parameters <- function(counts, group, min_count = 10,
                                 filter_fn = sum) {
-    idx <- which(apply(counts, 1, filter_fn) < min_count)
+    idx <- which(apply(counts, 1, filter_fn) > min_count)
     counts <- counts[idx, ]
     y <- DGEList(counts = counts, group = group)
     y <- calcNormFactors(y)
