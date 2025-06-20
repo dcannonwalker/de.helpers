@@ -16,6 +16,7 @@ estimate_parameters <- function(counts, group, min_count = 10,
     dispersion_pars <- y$tagwise.dispersion
     mean_pars <- apply(counts, 1, mean)
     list(
+        y = y,
         dispersion_pars = dispersion_pars,
         mean_pars = mean_pars
     )
