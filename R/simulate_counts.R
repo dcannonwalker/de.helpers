@@ -42,7 +42,7 @@ simulate_effects <- function(n_tags, mean_pars = NULL, method = c("dst", "emp"),
         if (is.null(mean_pars))
             stop("If method is 'emp', mean_pars must be provided")
         effects <- simulate_effects.emp(n_tags = n_tags, mean_pars = mean_pars,
-                                        de_prob = de_prob, ...)
+                                        ...)
     }
     if (method == "dst") {
         theta <- theta %||% 1
