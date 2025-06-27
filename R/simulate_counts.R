@@ -46,7 +46,7 @@ simulate_effects <- function(n_tags, mean_pars = NULL, method = c("dst", "emp"),
     if (method == "dst") {
         theta <- theta %||% 1
         de_prob <- de_prob %||% c(up = 0.05, down = 0.05)
-        effects <- simulate_effects.dst(n_tags = n_tags, theta = theta,
+        b1 <- simulate_effects.dst(n_tags = n_tags, theta = theta,
                                         distribution = "exponential",
                                         de_prob = de_prob,
                                         min_log_fc = min_log_fc, ...)
@@ -63,7 +63,9 @@ simulate_effects.emp <- function(n_tags, mean_pars, interval = 1) {
     return(cbind(b0, b1))
 }
 
-simulate_effects.dst <- function() {
+simulate_effects.dst <- function(n_tags, theta, de_prob,
+                                 distribution = c("exponential")) {
+    distribution <- match.arg(distribution)
     if (sum(de_prob) < 0 || sum(de_prob) > 1)
         stop("sum(de_prob) must be between 0 and 1")
     if (length(de_prob) == 1) {
