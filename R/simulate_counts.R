@@ -33,6 +33,7 @@ sample_neighborhood <- function(x0, x, y, interval = 3) {
 #' @param theta Exponential parameter to be used if `method` is `"dst"`
 #' @param min_log_fc Minimum value added to draws from `"dst"`
 #' @param ... Additional arguments passed to sub-functions
+#' @export
 simulate_effects <- function(n_tags, mean_pars = NULL, method = c("dst", "emp"),
                              de_prob = NULL,
                              theta = NULL, min_log_fc = log(1.5), ...) {
@@ -47,9 +48,9 @@ simulate_effects <- function(n_tags, mean_pars = NULL, method = c("dst", "emp"),
         theta <- theta %||% 1
         de_prob <- de_prob %||% c(up = 0.05, down = 0.05)
         b1 <- simulate_effects.dst(n_tags = n_tags, theta = theta,
-                                        distribution = "exponential",
-                                        de_prob = de_prob,
-                                        min_log_fc = min_log_fc, ...)
+                                   distribution = "exponential",
+                                   de_prob = de_prob,
+                                   min_log_fc = min_log_fc, ...)
     }
 }
 
@@ -75,6 +76,15 @@ simulate_effects.dst <- function(n_tags, theta, de_prob,
     de <- sample(c(-1, 0, 1), size = n_tags, replace = TRUE,
                  prob = c(de_prob['down'], 1 - sum(de_prob), de_prob['up']))
 }
+
+#' Simulate per-sample offsets
+#' @param offset_pars A vector of estimated offset parameters
+#' @param n_samples The number of samples for which to simulate offsets
+simulate_offsets <- function(offset_pars, n_samples, method = c("default")) {
+    method <- match.arg(method)
+    sample(offset_pars, n_samples, replace = TRUE)
+}
+
 #' Simulate RNASeq counts
 #' @param mean_pars A matrix of per-tag regression coefficients - should have
 #' two columns, with the first column the intercept
@@ -90,6 +100,7 @@ simulate_effects.dst <- function(n_tags, theta, de_prob,
 #' `simulate_offsets()`
 #' @param effects_options A list of options to control the behavior of
 #' `simulate_effects()`
+#' @export
 simulate_counts <- function(mean_pars, dispersion_pars,
                             dispersion_interval = log(20), n_tags,
                             design,
@@ -97,8 +108,10 @@ simulate_counts <- function(mean_pars, dispersion_pars,
                             offset_options = list(),
                             effects_options = list()) {
     n_samples <- nrow(design)
-    offset_args <- c(offset_options, list(n_samples = n_samples))
-    offsets <- do.call(sample_offsets, offset_args)
+    offset_args <- c(offset_options,
+                     list(n_samples = n_samples,
+                          offset_pars = offset_pars))
+    offsets <- do.call(simulate_offsets, offset_args)
     effects_args <- c(effects_options, list(n_tags = n_tags))
     if (!is.null(effects_options$method)) {
         if (effects_options$method == "emp")

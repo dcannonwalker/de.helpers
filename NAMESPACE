@@ -2,6 +2,8 @@
 
 export(estimate_parameters)
 export(sample_neighborhood)
+export(simulate_counts)
+export(simulate_effects)
 importFrom(edgeR,DGEList)
 importFrom(edgeR,calcNormFactors)
 importFrom(edgeR,estimateDisp)
