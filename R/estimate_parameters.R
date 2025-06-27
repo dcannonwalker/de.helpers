@@ -16,15 +16,11 @@ estimate_parameters <- function(counts, group, min_count = 10,
     fit <- glmFit(y)
     dispersion_pars <- y$tagwise.dispersion
     mean_pars <- fit$coefficients
-    unshrunk_mean_pars <- fit$unshrunk.coefficients
-    offset_pars <- apply(counts, 1, mean)
     list(
         y = y,
         fit = fit,
-        norm_factors_pars = y$samples$norm.factors,
+        offset_pars = y$samples$norm.factors * y$samples$lib.size,
         dispersion_pars = dispersion_pars,
         mean_pars = mean_pars,
-        unshrunk_mean_pars = unshrunk_mean_pars,
-        offset_pars = offset_pars
     )
 }
