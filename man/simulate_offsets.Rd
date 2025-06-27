@@ -4,12 +4,18 @@
 \alias{simulate_offsets}
 \title{Simulate per-sample offsets}
 \usage{
-simulate_offsets(offset_pars, n_samples, method = c("default"))
+simulate_offsets(offset_pars, n_samples, n_tags, method = c("default"))
 }
 \arguments{
-\item{offset_pars}{A vector of estimated offset parameters}
+\item{offset_pars}{A vector of estimated sample offsets}
 
 \item{n_samples}{The number of samples for which to simulate offsets}
+
+\item{n_tags}{The number of tags to simulate}
+
+\item{method}{One of \code{c("emp", "dst")}, for sampling from estimated
+coefficients or sampling from an exponential; if \code{method} is \code{"emp"},
+\code{mean_pars} must not be \code{NULL}}
 }
 \description{
 Simulate per-sample offsets

@@ -52,6 +52,7 @@ simulate_effects <- function(n_tags, mean_pars = NULL, method = c("dst", "emp"),
                                    de_prob = de_prob,
                                    min_log_fc = min_log_fc, ...)
     }
+    return(effects)
 }
 
 #' Simulate effects by sampling from estimated coefficients
@@ -78,11 +79,15 @@ simulate_effects.dst <- function(n_tags, theta, de_prob,
 }
 
 #' Simulate per-sample offsets
-#' @param offset_pars A vector of estimated offset parameters
+#' @inheritParams simulate_effects
+#' @inheritParams simulate_counts
 #' @param n_samples The number of samples for which to simulate offsets
-simulate_offsets <- function(offset_pars, n_samples, method = c("default")) {
+simulate_offsets <- function(offset_pars, n_samples, n_tags, method = c("default")) {
     method <- match.arg(method)
-    sample(offset_pars, n_samples, replace = TRUE)
+    edgeR::makeCompressedMatrix(
+        sample(offset_pars, n_samples, replace = TRUE),
+        dims = c(n_tags, n_samples)
+    )
 }
 
 #' Simulate RNASeq counts
@@ -110,6 +115,7 @@ simulate_counts <- function(mean_pars, dispersion_pars,
     n_samples <- nrow(design)
     offset_args <- c(offset_options,
                      list(n_samples = n_samples,
+                          n_tags = n_tags,
                           offset_pars = offset_pars))
     offsets <- do.call(simulate_offsets, offset_args)
     effects_args <- c(effects_options, list(n_tags = n_tags))
