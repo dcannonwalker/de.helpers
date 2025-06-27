@@ -21,6 +21,6 @@ estimate_parameters <- function(counts, group, min_count = 10,
         fit = fit,
         offset_pars = y$samples$norm.factors * y$samples$lib.size,
         dispersion_pars = dispersion_pars,
-        mean_pars = mean_pars,
+        mean_pars = mean_pars
     )
 }
