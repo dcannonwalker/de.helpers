@@ -1,9 +1,3 @@
-# n <- 100
-# p <- seq(0,1, length = n)
-# tn <- rbinom(n = n, size = 1, prob = p)
-# perm <- sample(length(p))
-# p <- p[perm]
-# tn <- tn[perm]
 calc_perf_metrics <- function(p, tn) {
     fpr <- sapply(p, calc_rate, p = p, s = tn)
     tpr <- sapply(p, calc_rate, p = p, s = 1 - tn)
@@ -68,24 +62,37 @@ trapezoid_area <- function(x1, x2, y1, y2) {
 }
 
 #' Algorithm 3 from Fawcett 2006; vertical averaging of ROC curves
-fawcett3 <- function(p, tn) {
-
-
+#' @param x0 A vector of fpr values
+#' @param rocs A list of ROC curves
+fawcett3 <- function(x0, rocs) {
+    out <- matrix(nrow = length(x0), ncol = length(rocs) + 1)
+    out[, 1] <- x0
+    for (i in seq(1, length(x0))) {
+        out[i, 2:ncol(out)] <- sapply(rocs, tpr_for_fpr, x0 = x0[i])
+    }
+    colnames(out) <- c("fpr", paste0("tpr", 1:length(rocs)))
+    return(out)
 }
 
 #' For a given fpr, find the fpr values on the ROC curve that bracket it
-tpr_for_fpr <- function(roc, i, x0) {
-    rocsub <- roc[i:nrow(roc), ]
-    # what is the first row in `rocsub` with `fpr` higher than x0
-    idx <- which(rocsub[, 'fpr'] < x0)
-    idx + 1
+tpr_for_fpr <- function(roc, x0) {
+    idx <- max(which(roc[, 'fpr'] <= x0))
+    # in case there are 1+ fp before the first tp
+    if (idx == -Inf) return(0)
+    if (roc[idx, 'fpr'] == x0) return(roc[idx, 'tpr'])
+    return(
+        interpolate(
+            x0,
+            x1 = roc[idx, 'fpr'],
+            x2 = roc[idx + 1, 'fpr'],
+            y1 = roc[idx, 'tpr'],
+            y2 = roc[idx + 1, 'tpr']
+        )
+    )
 }
+
 
 #' Interpolate between two points
 interpolate <- function(x0, x1, x2, y1, y2) {
     y1 + (x0 - x1) * (y2 - y1) / (x2 - x1)
 }
-
-# roc <- fawcett1(p, tn)
-# fawcett2(p, tn)
-
