@@ -4,11 +4,12 @@
 #' @param counts A matrix of counts; columns are samples, rows are tags
 #' @param design A design matrix for the columns of `counts`
 #' @param ... Additional parameters to pass on
+#' @export
 fit_edgeR <- function(counts, design, ...) {
     y <- DGEList(counts = counts,
                  genes = paste0("tag", 1:nrow(counts)),
                  group = design[, 2])
-    y <- edgeR::normLibSizes(y)
+    y <- normLibSizes(y)
     y <- estimateDisp(y)
     et <- edgeR::exactTest(y)
     out <- edgeR::topTags(et, n = nrow(et$table), sort.by = "none")
@@ -22,7 +23,7 @@ fit_edgeR <- function(counts, design, ...) {
     )
     if (colnames(out) != expected_colnames)
         warning("topTags colnames not as expected")
-    colnames(out) <- c("tag", "log2fc", "log2cpm", "prob", "fdr")
+    out <- .set_colnames(out)
     return(out)
 }
 
@@ -30,6 +31,7 @@ fit_edgeR <- function(counts, design, ...) {
 #' Note to self: to be extended to more general designs
 #' Note that fdr is 'BH' adjustment to p-value
 #' @inheritParams fit_edgeR
+#' @export
 fit_DESeq2 <- function(counts, design, ...) {
     # second column of design must be treatment group
     trt <- design[, 2]
@@ -55,6 +57,52 @@ fit_DESeq2 <- function(counts, design, ...) {
     out <- res
     out[, 'tag'] <- paste0("tag", 1:nrow(counts))
     out <- out[, c(7, 2, 1, 5, 6)]
+    out <- .set_colnames(out)
+    return(out)
+}
+
+#' Fit a standard `limma-trend` or `limma-voom` pipeline for
+#' two-group comparison
+#' Note to self: to be extended to more general designs
+#' Note that fdr is 'BH' adjustment to p-value
+#' @inheritParams fit_edgeR
+#' @param use_voom Logical - use `limma-voom`? Otherwise use `limma-trend`
+#' @export
+fit_limma <- function(counts, design, use_voom = TRUE, ...) {
+    y <- DGEList(counts = counts,
+                 genes = paste0("tag", 1:nrow(sim$counts)),
+                 group = design[, 2])
+    y <- normLibSizes(y)
+    if (use_voom) {
+        fit <- .fit_limma(y, design, fn = limma::voom, trend = FALSE)
+    } else {
+        fit <- .fit_limma(y, design, fn = edgeR::cpm, trend = TRUE,
+                          log = TRUE, prior_count = 3)
+    }
+    out <- limma::topTable(fit, coef = ncol(design))
+    expected_colnames <- c(
+        "ID",
+        "logFC",
+        "AveExpr",
+        "t",
+        "P.Value",
+        "adj.P.Val",
+        "B"
+    )
+    if (colnames(res) != expected_colnames)
+        warning("topTable columns not as expected")
+    out <- out[, c(1, 2, 3, 5, 6)]
+    out <- .set_colnames(out)
+    return(out)
+}
+
+.fit_limma <- function(y, design, fn, trend, ...) {
+    y_transform <- fn(y, design, ...)
+    fit <- limma::lmFit(y_transform, design = design)
+    return(limma::eBayes(fit, trend = trend))
+}
+
+.set_colnames <- function(out) {
     colnames(out) <- c("tag", "log2fc", "basemean", "prob", "fdr")
     return(out)
 }

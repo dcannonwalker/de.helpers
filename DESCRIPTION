@@ -13,4 +13,5 @@ URL: https://github.com/dcannonwalker/de.helpers
 BugReports: https://github.com/dcannonwalker/de.helpers/issues
 Imports: 
     DESeq2,
-    edgeR
+    edgeR,
+    limma

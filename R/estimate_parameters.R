@@ -11,7 +11,7 @@ estimate_parameters <- function(counts, group, min_count = 10,
     idx <- which(apply(counts, 1, filter_fn) > min_count)
     counts <- counts[idx, ]
     y <- DGEList(counts = counts, group = group)
-    y <- calcNormFactors(y)
+    y <- normLibSizes(y)
     y <- estimateDisp(y)
     fit <- glmFit(y)
     dispersion_pars <- y$tagwise.dispersion

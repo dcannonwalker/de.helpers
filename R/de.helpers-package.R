@@ -2,7 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom edgeR calcNormFactors
+#' @importFrom edgeR normLibSizes
 #' @importFrom edgeR DGEList
 #' @importFrom edgeR estimateDisp
 #' @importFrom edgeR glmFit
