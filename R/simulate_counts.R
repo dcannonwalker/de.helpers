@@ -138,7 +138,8 @@ simulate_counts <- function(mean_pars, dispersion_pars,
             effects = effects,
             offsets = offsets,
             dispersions = dispersions,
-            means = means
+            means = means,
+            design = design
         )
     )
 }
