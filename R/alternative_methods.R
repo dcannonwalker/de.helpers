@@ -41,7 +41,7 @@ fit_DESeq2 <- function(counts, design, ...) {
     expected_rn <- c("Intercept", "trt_1_vs_0")
     if (DESeq2::resultsNames(y) != expected_rn)
         warning("resultsNames not as expected")
-    res <- results(y, name="trt_1_vs_0")
+    res <- DESeq2::results(y, name="trt_1_vs_0")
     expected_colnames <- c(
         "baseMean",
         "log2FoldChange",
