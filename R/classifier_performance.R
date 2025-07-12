@@ -11,6 +11,14 @@ calc_rate <- function(p0, p, s) {
     x <- sum(s[p <= p0])
     x / sum(s)
 }
+#' Calculate the estimated false discovery rate
+#' @param p A vector of posterior probabilities
+#' @export
+calc_bfdr <- function(p) {
+    sapply(p, function(p0) {
+        sum(p[p <= p0]) / sum(p <= p0)
+    })
+}
 
 #' Algorithm 1 from Fawcett 2006, for generating ROC points
 #' @param p Vector of null probabilities

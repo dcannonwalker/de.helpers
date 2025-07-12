@@ -107,13 +107,38 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
     return(out)
 }
 
+#' Fit a standard `ngstan` pipeline for two group comparison
+#' @inheritParams fit_edgeR
+#' @export
 fit_ngstan <- function(counts, design, ...) {
-    y <- seqlist$new(counts = counts, tags = paste0("tag", 1:nrow(sim$counts)))
+    y <- ngstan::seqlist$new(
+        counts = counts,
+        tags = paste0("tag", 1:nrow(sim$counts))
+    )
     y$set_fixed_design(fixed_design = design)
     y$set_mixture_probabilities(c(1, 0.8))
     y$initialize_standata()
-    y$run_model(run_estimation = TRUE, use_multithread = TRUE,
-                grainsize = 125, iter_warmup = 1000, iter_sampling = 1000,
-                parallel_chains = 4)
-    fit <- y$fit
+    fit <- y$run_model(run_estimation = TRUE, use_multithread = TRUE,
+                       grainsize = 125,
+                       iter_warmup = 1000,
+                       iter_sampling = 1000,
+                       parallel_chains = 4,
+                       modify_in_place = FALSE)
+    draws <- fit$draws()
+    comps <- y$standata$comps
+    beta <- posterior::extract_variable_array(draws, "beta")
+    d_pmf <- posterior::extract_variable_array(draws, "d_pmf")
+    logoffset <- apply(
+        posterior::extract_variable_array(draws, "log_offset"),
+        3, mean)
+    prob <- get_contrast_posterior_mean(contrast = 1, comps, d_pmf, beta)
+    log2fc <- get_log2fc_posterior_mean(comps, d_pmf, beta)
+    out <- data.frame(
+        tag = y$tags,
+        log2fc = log2fc,
+        logoffset = logoffset,
+        prob = prob,
+        fdr = calc_bfdr(prob)
+    )
+    return(out)
 }
