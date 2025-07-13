@@ -34,3 +34,30 @@ make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
     }
     return(path)
 }
+
+#' Set up a directory to contain all the files for a single simulated dataset
+#' within a simulation study
+#' @param dataset_id The dataset identifier
+#' @inheritParams make_sim_dir
+make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_studies") {
+    path <- file.path(root, simulation_id, dataset_id)
+    exists <- dir.exists(path)
+    if (exists) {
+        message("Directory already exists; not creating")
+    } else {
+        if (interactive()) {
+            msg <- glue::glue("Creating directory at",
+                              " {path};",
+                              " do you wish to proceed?")
+            sel <- yesno(msg)
+        } else sel <- TRUE
+        if (sel) dir.create(path, recursive = TRUE)
+    }
+    docfile <- file.path(root, simulation_id, "dataset_ids.csv")
+    docexists <- file.exists(docfile)
+    if (docexists) append <- TRUE
+    else append <- FALSE
+    row <- data.frame(dataset_id = dataset_id)
+    write.csv(row, file = docfile, append = append, row.names = FALSE)
+    return(path)
+}
