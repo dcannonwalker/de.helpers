@@ -24,14 +24,14 @@ make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
     }
     doc <- yesno("Add a line of metadata to simulation study index?")
     if (doc) {
-        docfile <- file.path(root, "study_index.csv")
+        docfile <- file.path(root, "study_index.txt")
         docexists <- file.exists(docfile)
         append <- FALSE
         if (docexists) append <- TRUE
         desc <- readline("Enter a one-line description: ")
         row <- data.frame(simulation_id = simulation_id, description = desc)
         message(glue::glue("Writing description to {docfile}"))
-        write.csv(row, file = docfile, append = append, row.names = FALSE)
+        write.table(row, file = docfile, append = append, row.names = FALSE)
     }
     return(path)
 }
@@ -55,12 +55,12 @@ make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_s
         } else sel <- TRUE
         if (sel) dir.create(path, recursive = TRUE)
     }
-    docfile <- file.path(root, simulation_id, "dataset_ids.csv")
+    docfile <- file.path(root, simulation_id, "dataset_ids.txt")
     docexists <- file.exists(docfile)
     append <- FALSE
     if (docexists) append <- TRUE
     row <- data.frame(dataset_id = dataset_id)
-    write.csv(row, file = docfile, append = append, row.names = FALSE)
+    write.table(row, file = docfile, append = append, row.names = FALSE)
     return(path)
 }
 
