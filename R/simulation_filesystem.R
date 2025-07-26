@@ -27,11 +27,16 @@ make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
         docfile <- file.path(root, "study_index.txt")
         docexists <- file.exists(docfile)
         append <- FALSE
-        if (docexists) append <- TRUE
+        col.names <- TRUE
+        if (docexists) {
+            append <- TRUE
+            col.names <- FALSE
+        }
         desc <- readline("Enter a one-line description: ")
         row <- data.frame(simulation_id = simulation_id, description = desc)
         message(glue::glue("Writing description to {docfile}"))
-        write.table(row, file = docfile, append = append, row.names = FALSE)
+        write.table(row, file = docfile, append = append,
+                    col.names = col.names, row.names = FALSE)
     }
     return(path)
 }
