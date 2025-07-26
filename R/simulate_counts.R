@@ -24,6 +24,32 @@ sample_neighborhood <- function(x0, x, y, interval = 3) {
 #' @param method One of `c("emp", "dst")`, for sampling from estimated
 #' coefficients or sampling from an exponential; if `method` is `"emp"`,
 #' `mean_pars` must not be `NULL`
+#' @param ... Arguments passed to sub-functions
+#' @export
+simulate_effects <- function(n_tags, ...) {
+    method <- match.arg(method)
+    fn <- switch(
+        method,
+        dst = simulate_effects.dst,
+        emp = simulate_effects.emp,
+        emp.paired = simulated_effects.emp.paired
+    )
+    effects <- fn(n_tags, ...)
+    return(effects)
+}
+
+#' Simulate effects by sampling from estimated coefficients
+#' @inheritParams simulate_effects
+simulate_effects.emp <- function(n_tags, mean_pars, interval = 1) {
+    if (is.null(mean_pars))
+        stop("If method is 'emp', mean_pars must be provided")
+    b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
+
+    b1 <- sapply(b0, sample_neighborhood, x = b0, y = mean_pars[, 2],
+                 interval = interval)
+    return(cbind(b0, b1))
+}
+
 #' @param de_prob Either a single probability representing the chance
 #' that any given tag exhibits differential expression,
 #' or a named vector of two probabilities, representing the chance
@@ -32,41 +58,10 @@ sample_neighborhood <- function(x0, x, y, interval = 3) {
 #' will be `up` regulated; used only if `method` is `"dst"`
 #' @param theta Exponential parameter to be used if `method` is `"dst"`
 #' @param min_log_fc Minimum value added to draws from `"dst"`
-#' @param ... Additional arguments passed to sub-functions
-#' @export
-simulate_effects <- function(n_tags, mean_pars = NULL, method = c("dst", "emp"),
-                             de_prob = NULL,
-                             theta = NULL, min_log_fc = log(1.5), ...) {
-    method <- match.arg(method)
-    if (method == "emp") {
-        if (is.null(mean_pars))
-            stop("If method is 'emp', mean_pars must be provided")
-        effects <- simulate_effects.emp(n_tags = n_tags, mean_pars = mean_pars,
-                                        ...)
-    }
-    if (method == "dst") {
-        theta <- theta %||% 1
-        de_prob <- de_prob %||% c(up = 0.05, down = 0.05)
-        b1 <- simulate_effects.dst(n_tags = n_tags, theta = theta,
-                                   distribution = "exponential",
-                                   de_prob = de_prob,
-                                   min_log_fc = min_log_fc, ...)
-    }
-    return(effects)
-}
-
-#' Simulate effects by sampling from estimated coefficients
-#' @inheritParams simulate_effects
-simulate_effects.emp <- function(n_tags, mean_pars, interval = 1) {
-    b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
-
-    b1 <- sapply(b0, sample_neighborhood, x = b0, y = mean_pars[, 2],
-                 interval = interval)
-    return(cbind(b0, b1))
-}
-
 simulate_effects.dst <- function(n_tags, theta, de_prob,
                                  distribution = c("exponential")) {
+    theta <- theta %||% 1
+    de_prob <- de_prob %||% c(up = 0.05, down = 0.05)
     distribution <- match.arg(distribution)
     if (sum(de_prob) < 0 || sum(de_prob) > 1)
         stop("sum(de_prob) must be between 0 and 1")
@@ -124,7 +119,7 @@ simulate_counts <- function(mean_pars, dispersion_pars,
             effects_args$mean_pars <- mean_pars
     }
     effects <- do.call(simulate_effects, effects_args)
-    dispersions <- sapply(mean_pars[, 1], sample_neighborhood,
+    dispersions <- sapply(effects[, 1], sample_neighborhood,
                           x = mean_pars[, 1], y = dispersion_pars,
                           interval = dispersion_interval)
     means <- exp(offsets + t(design %*% t(effects)))
