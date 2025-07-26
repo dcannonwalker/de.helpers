@@ -58,9 +58,14 @@ make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_s
     docfile <- file.path(root, simulation_id, "dataset_ids.txt")
     docexists <- file.exists(docfile)
     append <- FALSE
-    if (docexists) append <- TRUE
+    col.names <- TRUE
+    if (docexists) {
+        append <- TRUE
+        col.names <- FALSE
+    }
     row <- data.frame(dataset_id = dataset_id)
-    write.table(row, file = docfile, append = append, row.names = FALSE)
+    write.table(row, file = docfile, append = append,
+                col.names = col.names, row.names = FALSE)
     return(path)
 }
 
