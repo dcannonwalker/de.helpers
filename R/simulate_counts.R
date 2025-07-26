@@ -30,7 +30,7 @@ simulate_effects <- function(n_tags, ...) {
     method <- match.arg(method)
     fn <- switch(
         method,
-        dst = simulate_effects.dst,
+        # dst = simulate_effects.dst,
         emp = simulate_effects.emp,
         emp.paired = simulated_effects.emp.paired
     )
@@ -38,9 +38,23 @@ simulate_effects <- function(n_tags, ...) {
     return(effects)
 }
 
-#' Simulate effects by sampling from estimated coefficients
+#' Simulate effects for a simple two-group design
+#' by sampling from estimated coefficients
 #' @inheritParams simulate_effects
 simulate_effects.emp <- function(n_tags, mean_pars, interval = 1) {
+    if (is.null(mean_pars))
+        stop("If method is 'emp', mean_pars must be provided")
+    b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
+
+    b1 <- sapply(b0, sample_neighborhood, x = b0, y = mean_pars[, 2],
+                 interval = interval)
+    return(cbind(b0, b1))
+}
+
+#' Simulate effects for a two-group design with paired samples
+#' by sampling from estimated coefficients
+simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
+                                        sfx_cols) {
     if (is.null(mean_pars))
         stop("If method is 'emp', mean_pars must be provided")
     b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
