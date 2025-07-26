@@ -25,8 +25,8 @@ make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
     if (doc) {
         docfile <- file.path(root, "study_index.csv")
         docexists <- file.exists(docfile)
+        append <- FALSE
         if (docexists) append <- TRUE
-        else append <- FALSE
         desc <- readline("Enter a one-line description: ")
         row <- data.frame(simulation_id = simulation_id, description = desc)
         message(glue::glue("Writing description to {docfile}"))
@@ -55,9 +55,40 @@ make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_s
     }
     docfile <- file.path(root, simulation_id, "dataset_ids.csv")
     docexists <- file.exists(docfile)
+    append <- FALSE
     if (docexists) append <- TRUE
-    else append <- FALSE
     row <- data.frame(dataset_id = dataset_id)
     write.csv(row, file = docfile, append = append, row.names = FALSE)
     return(path)
+}
+
+#' Generate an identifier
+#' @param n_ids Number of ids to generate
+#' @param n_char Number of characters
+#' @param ids_to_check A vector of other ids to check against
+#' @param seed Seed value to set
+generate_id <- function(n_ids = 1, n_char = 10, ids_to_check = NULL,
+                        seed = NULL, i = 0) {
+    if (i > 5) stop("i > 5; are you stuck in a loop?")
+    if (n_ids > 1) {
+        ids <- sapply(1:n_ids, function(i) {
+            generate_id(n_char = n_char, ids_to_check = ids_to_check,
+                        seed = NULL, i = 0)
+        })
+        if (length(unique(ids)) < length(ids)) {
+            warning("non-unique ids generated")
+        }
+        return(ids)
+    }
+    if (!is.null(seed)) set.seed(seed)
+    id <- paste0(sample(letters, n_char, replace = TRUE), collapse = "")
+    if (!is.null(ids_to_check)) {
+        exists <- id %in% ids_to_check
+        if (exists) {
+            message("id already in use; regenerating")
+            id <- generate_id(n_char = n_char, ids_to_check = ids_to_check,
+                              i = i + 1)
+        }
+    }
+    return(id)
 }
