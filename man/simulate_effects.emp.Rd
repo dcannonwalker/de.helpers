@@ -8,9 +8,6 @@ simulate_effects.emp(n_tags, mean_pars, interval = 1)
 }
 \arguments{
 \item{n_tags}{The number of tags to simulate}
-
-\item{mean_pars}{A matrix of per-tag regression coefficients - should have
-two columns, with the first column the intercept}
 }
 \description{
 Simulate effects by sampling from estimated coefficients

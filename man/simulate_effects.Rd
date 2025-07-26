@@ -4,38 +4,16 @@
 \alias{simulate_effects}
 \title{Simulate treatment effects}
 \usage{
-simulate_effects(
-  n_tags,
-  mean_pars = NULL,
-  method = c("dst", "emp"),
-  de_prob = NULL,
-  theta = NULL,
-  min_log_fc = log(1.5),
-  ...
-)
+simulate_effects(n_tags, ...)
 }
 \arguments{
 \item{n_tags}{The number of tags to simulate}
 
-\item{mean_pars}{A matrix of per-tag regression coefficients - should have
-two columns, with the first column the intercept}
+\item{...}{Arguments passed to sub-functions}
 
 \item{method}{One of \code{c("emp", "dst")}, for sampling from estimated
 coefficients or sampling from an exponential; if \code{method} is \code{"emp"},
 \code{mean_pars} must not be \code{NULL}}
-
-\item{de_prob}{Either a single probability representing the chance
-that any given tag exhibits differential expression,
-or a named vector of two probabilities, representing the chance
-that any given tag exhibits differential expression in the \code{up} or \code{down}
-direction; if a single probability, half of differentially expressed tags
-will be \code{up} regulated; used only if \code{method} is \code{"dst"}}
-
-\item{theta}{Exponential parameter to be used if \code{method} is \code{"dst"}}
-
-\item{min_log_fc}{Minimum value added to draws from \code{"dst"}}
-
-\item{...}{Additional arguments passed to sub-functions}
 }
 \description{
 Simulate treatment effects

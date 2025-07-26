@@ -9,6 +9,7 @@ yesno <- function(x) {
 #' Set up a directory to contain all files for a given simulation study
 #' @param simulation_id The simulation study identifier
 #' @param root The parent directory for all simulation studies
+#' @export
 make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
     path <- file.path(root, simulation_id)
     exists <- dir.exists(path)
@@ -39,6 +40,7 @@ make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
 #' within a simulation study
 #' @param dataset_id The dataset identifier
 #' @inheritParams make_sim_dir
+#' @export
 make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_studies") {
     path <- file.path(root, simulation_id, dataset_id)
     exists <- dir.exists(path)
@@ -67,6 +69,7 @@ make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_s
 #' @param n_char Number of characters
 #' @param ids_to_check A vector of other ids to check against
 #' @param seed Seed value to set
+#' @export
 generate_id <- function(n_ids = 1, n_char = 10, ids_to_check = NULL,
                         seed = NULL, i = 0) {
     if (i > 5) stop("i > 5; are you stuck in a loop?")
