@@ -7,36 +7,36 @@
 simulate_counts(
   mean_pars,
   dispersion_pars,
-  dispersion_interval = log(20),
+  offset_pars,
   n_tags,
   design,
-  offset_pars,
   offset_options = list(),
-  effects_options = list()
+  effects_options = list(),
+  dispersion_interval = log(20)
 )
 }
 \arguments{
-\item{mean_pars}{A matrix of per-tag regression coefficients - should have
-two columns, with the first column the intercept}
+\item{mean_pars}{A matrix of per-tag regression coefficients,
+with the first column the intercept}
 
 \item{dispersion_pars}{A vector of estimated per-tag dispersions}
 
-\item{dispersion_interval}{After simulating the base mean \code{b0},
-the dispersion is sampled from
-\code{dispersion_pars[abs(mean_pars[, 1] - b0) < dispersion_interval]}}
+\item{offset_pars}{A vector of estimated sample offsets}
 
 \item{n_tags}{The number of tags to simulate}
 
 \item{design}{The design matrix for the simulated samples - should have
 two columns, with the first column the intercept}
 
-\item{offset_pars}{A vector of estimated sample offsets}
-
 \item{offset_options}{A list of options to control the behavior of
 \code{simulate_offsets()}}
 
 \item{effects_options}{A list of options to control the behavior of
 \code{simulate_effects()}}
+
+\item{dispersion_interval}{After simulating the base mean \code{b0},
+the dispersion is sampled from
+\code{dispersion_pars[abs(mean_pars[, 1] - b0) < dispersion_interval]}}
 }
 \description{
 Simulate RNASeq counts

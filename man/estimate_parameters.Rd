@@ -4,13 +4,21 @@
 \alias{estimate_parameters}
 \title{Estimate parameters from a real rna-seq data set}
 \usage{
-estimate_parameters(counts, group, min_count = 10, filter_fn = sum)
+estimate_parameters(
+  counts,
+  group = NULL,
+  design = NULL,
+  min_count = 10,
+  filter_fn = sum
+)
 }
 \arguments{
 \item{counts}{a matrix of counts}
 
 \item{group}{a vector of treatment group labels corresponding to
 columns of \code{counts}}
+
+\item{design}{a design matrix to use to fit \code{edgeR} model}
 
 \item{min_count}{the minimum count to keep a tag in the dataset}
 

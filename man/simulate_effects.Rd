@@ -11,9 +11,8 @@ simulate_effects(n_tags, ...)
 
 \item{...}{Arguments passed to sub-functions}
 
-\item{method}{One of \code{c("emp", "dst")}, for sampling from estimated
-coefficients or sampling from an exponential; if \code{method} is \code{"emp"},
-\code{mean_pars} must not be \code{NULL}}
+\item{method}{One of \code{c("emp", "emp.paired")}, for two group or
+two group with paired samples}
 }
 \description{
 Simulate treatment effects

@@ -21,9 +21,9 @@ sample_neighborhood <- function(x0, x, y, interval = 3) {
 
 #' Simulate treatment effects
 #' @inheritParams simulate_counts
-#' @param method One of `c("emp", "dst")`, for sampling from estimated
-#' coefficients or sampling from an exponential; if `method` is `"emp"`,
-#' `mean_pars` must not be `NULL`
+#' @param method One of `c("emp", "emp.paired")`, for two group or
+#' two group with paired samples
+#' @param n_tags The number of tags to simulate
 #' @param ... Arguments passed to sub-functions
 #' @export
 simulate_effects <- function(n_tags, ...) {
@@ -31,17 +31,19 @@ simulate_effects <- function(n_tags, ...) {
     fn <- switch(
         method,
         # dst = simulate_effects.dst,
-        emp = simulate_effects.emp,
+        # emp = simulate_effects.emp,
         emp.paired = simulated_effects.emp.paired
     )
     effects <- fn(n_tags, ...)
     return(effects)
 }
 
+#' Not really supported yet...
 #' Simulate effects for a simple two-group design
 #' by sampling from estimated coefficients
 #' @inheritParams simulate_effects
-simulate_effects.emp <- function(n_tags, mean_pars, interval = 1) {
+simulate_effects.emp <- function(n_tags, mean_pars, interval = 1,
+                                 min_b1 = log(1.3), ...) {
     if (is.null(mean_pars))
         stop("If method is 'emp', mean_pars must be provided")
     b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
@@ -53,17 +55,38 @@ simulate_effects.emp <- function(n_tags, mean_pars, interval = 1) {
 
 #' Simulate effects for a two-group design with paired samples
 #' by sampling from estimated coefficients
+#'
+#' Expects that the first column of `mean_pars` is for the intercept,
+#' middle columns are for sample effects, and the final column is for
+#' treatment effect
+#' @inheritParams simulate_effects
+#' @inheritParams simulate_counts
+#' @param n_pairs The number of sample effects to simulate
+#' @param sfx_cols The columns of `mean_pars` to pool for sample effect
+#' simulation
+#' @param b1_min The smallest absolute value to allow for treatment effects
+#' @param p_null The proportion of tags with no treatment effect
 simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
-                                        sfx_cols) {
-    if (is.null(mean_pars))
-        stop("If method is 'emp', mean_pars must be provided")
+                                        p_null, b1_min = 0,
+                                        sfx_cols = NULL, ...) {
+    if (is.null(sfx_cols)) {
+        message("Pooling all columns except first and last for sample effects")
+        sfx_cols <- seq(2, ncol(mean_pars) - 1)
+    }
+    b1_pars <- mean_pars[, 2]
+    n_null <- ceiling(n_tags * p_null)
     b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
-
-    b1 <- sapply(b0, sample_neighborhood, x = b0, y = mean_pars[, 2],
-                 interval = interval)
-    return(cbind(b0, b1))
+    b1 <- c(
+        rep(0, n_null),
+        sample(b1_pars[abs(b1_pars) >= b1_min], n_tags - n_null, replace = TRUE)
+    )
+    sfx_pars <- c(mean_pars[, sfx_cols])
+    sfx <- matrix(sample(sfx_pars, n_tags * n_pairs, replace = TRUE),
+                  nrow = n_tags, ncol = n_pairs)
+    return(cbind(b0, sfx, b1))
 }
 
+#' Not really supported yet...
 #' @param de_prob Either a single probability representing the chance
 #' that any given tag exhibits differential expression,
 #' or a named vector of two probabilities, representing the chance
@@ -73,7 +96,7 @@ simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
 #' @param theta Exponential parameter to be used if `method` is `"dst"`
 #' @param min_log_fc Minimum value added to draws from `"dst"`
 simulate_effects.dst <- function(n_tags, theta, de_prob,
-                                 distribution = c("exponential")) {
+                                 distribution = c("exponential"), ...) {
     theta <- theta %||% 1
     de_prob <- de_prob %||% c(up = 0.05, down = 0.05)
     distribution <- match.arg(distribution)
@@ -100,8 +123,8 @@ simulate_offsets <- function(offset_pars, n_samples, n_tags, method = c("default
 }
 
 #' Simulate RNASeq counts
-#' @param mean_pars A matrix of per-tag regression coefficients - should have
-#' two columns, with the first column the intercept
+#' @param mean_pars A matrix of per-tag regression coefficients,
+#' with the first column the intercept
 #' @param dispersion_pars A vector of estimated per-tag dispersions
 #' @param dispersion_interval After simulating the base mean `b0`,
 #' the dispersion is sampled from
@@ -115,23 +138,23 @@ simulate_offsets <- function(offset_pars, n_samples, n_tags, method = c("default
 #' @param effects_options A list of options to control the behavior of
 #' `simulate_effects()`
 #' @export
-simulate_counts <- function(mean_pars, dispersion_pars,
-                            dispersion_interval = log(20), n_tags,
-                            design,
-                            offset_pars,
+simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
+                            n_tags, design,
                             offset_options = list(),
-                            effects_options = list()) {
+                            effects_options = list(),
+                            dispersion_interval = log(20)
+                            ) {
     n_samples <- nrow(design)
     offset_args <- c(offset_options,
                      list(n_samples = n_samples,
                           n_tags = n_tags,
                           offset_pars = offset_pars))
     offsets <- do.call(simulate_offsets, offset_args)
-    effects_args <- c(effects_options, list(n_tags = n_tags))
-    if (!is.null(effects_options$method)) {
-        if (effects_options$method == "emp")
-            effects_args$mean_pars <- mean_pars
-    }
+    effects_args <- c(
+        effects_options,
+        list(n_tags = n_tags,
+             mean_pars = mean_pars)
+    )
     effects <- do.call(simulate_effects, effects_args)
     dispersions <- sapply(effects[, 1], sample_neighborhood,
                           x = mean_pars[, 1], y = dispersion_pars,
@@ -149,6 +172,34 @@ simulate_counts <- function(mean_pars, dispersion_pars,
             dispersions = dispersions,
             means = means,
             design = design
+        )
+    )
+}
+
+#' Fit `edgeR` to a given dataset, then use the estimated parameters
+#' to generate a simulated dataset
+#' @param counts A matrix of (presumably real) RNA-Seq counts
+#' @param design A design matrix to use to fit `edgeR` model to `counts`
+#' @param sim_design A design matrix to use to generate simulated data
+#' @inheritParams sim_counts
+#' @param ... Additional arguments
+#' to pass to `simulate_counts()`
+#' @export
+simulate_counts_from_dataset <- function(counts, design,
+                                         n_tags,
+                                         sim_design,
+                                         offset_options,
+                                         effects_options, ...) {
+    pars <- estimate_parameters(counts = counts, design = design)
+    sim <- simulate_counts(mean_pars = pars$mean_pars,
+                           dispersion_pars = pars$dispersion_pars,
+                           offset_pars = pars$offset_pars, n_tags = n_tags,
+                           design = sim_design, offset_options = offset_options,
+                           effects_options = effects_options, ...)
+    return(
+        list(
+            pars = pars,
+            sim = sim
         )
     )
 }
