@@ -2,19 +2,19 @@
 % Please edit documentation in R/simulation_filesystem.R
 \name{make_dataset_dir}
 \alias{make_dataset_dir}
-\title{Set up a directory to contain all the files for a single simulated dataset
+\title{Set up a directory to contain all the files for a single simulated data set
 within a simulation study}
 \usage{
 make_dataset_dir(dataset_id, simulation_id, root = "out/simulation_studies")
 }
 \arguments{
-\item{dataset_id}{The dataset identifier}
+\item{dataset_id}{The data set identifier}
 
 \item{simulation_id}{The simulation study identifier}
 
 \item{root}{The parent directory for all simulation studies}
 }
 \description{
-Set up a directory to contain all the files for a single simulated dataset
+Set up a directory to contain all the files for a single simulated data set
 within a simulation study
 }

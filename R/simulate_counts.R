@@ -142,7 +142,7 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
                             offset_options = list(),
                             effects_options = list(),
                             dispersion_interval = log(20)
-                            ) {
+) {
     n_samples <- nrow(design)
     offset_args <- c(offset_options,
                      list(n_samples = n_samples,
@@ -188,17 +188,24 @@ simulate_counts_from_dataset <- function(counts, design,
                                          n_tags,
                                          sim_design,
                                          offset_options,
-                                         effects_options, ...) {
+                                         effects_options,
+                                         full_output = FALSE, ...) {
     pars <- estimate_parameters(counts = counts, design = design)
     sim <- simulate_counts(mean_pars = pars$mean_pars,
                            dispersion_pars = pars$dispersion_pars,
                            offset_pars = pars$offset_pars, n_tags = n_tags,
                            design = sim_design, offset_options = offset_options,
                            effects_options = effects_options, ...)
-    return(
-        list(
+    if (full_output) {
+        out <- list(
             pars = pars,
             sim = sim
         )
-    )
+    } else {
+        out <- list(
+            counts = sim$counts,
+            effects = sim$effects
+        )
+    }
+    return(out)
 }

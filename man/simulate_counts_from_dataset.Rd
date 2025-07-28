@@ -12,6 +12,7 @@ simulate_counts_from_dataset(
   sim_design,
   offset_options,
   effects_options,
+  full_output = FALSE,
   ...
 )
 }

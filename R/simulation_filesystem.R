@@ -41,9 +41,9 @@ make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
     return(path)
 }
 
-#' Set up a directory to contain all the files for a single simulated dataset
+#' Set up a directory to contain all the files for a single simulated data set
 #' within a simulation study
-#' @param dataset_id The dataset identifier
+#' @param dataset_id The data set identifier
 #' @inheritParams make_sim_dir
 #' @export
 make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_studies") {
@@ -104,4 +104,31 @@ generate_id <- function(n_ids = 1, n_char = 10, ids_to_check = NULL,
         }
     }
     return(id)
+}
+
+#' Save simulated data sets for a simulation study
+#' @inheritParams make_sim_dir
+#' @param sim_data A list of simulated data sets, each element named
+#' matching one of the data set ids in the simulation study
+#' @param design The design matrix for the simulated counts
+#' @export
+save_datasets <- function(simulation_id, sim_data, design,
+                          root = "out/simulation_studies") {
+    simulation_root <- file.path(root, simulation_id)
+    message(
+        glue::glue("Saving design matrix to",
+                   " {file.path(simulation_root, 'design')}...")
+    )
+    write.table(design, file = file.path(simulation_root, "design"))
+    lapply(names(sim_data), function(dataset_id) {
+        dataset_root <- file.path(simulation_root, dataset_id)
+        lapply(names(sim_data[[dataset_id]]), function(tbl) {
+            message(
+                glue::glue("Saving {tbl} to",
+                           " {file.path(data.set_root, tbl)}...")
+            )
+            write.table(sim_data[[dataset_id]][[tbl]],
+                        file.path(dataset_root, tbl))
+        })
+    })
 }
