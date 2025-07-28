@@ -4,15 +4,15 @@
 \alias{simulate_effects}
 \title{Simulate treatment effects}
 \usage{
-simulate_effects(n_tags, ...)
+simulate_effects(n_tags, method, ...)
 }
 \arguments{
 \item{n_tags}{The number of tags to simulate}
 
-\item{...}{Arguments passed to sub-functions}
-
 \item{method}{One of \code{c("emp", "emp.paired")}, for two group or
 two group with paired samples}
+
+\item{...}{Arguments passed to sub-functions}
 }
 \description{
 Simulate treatment effects

@@ -20,13 +20,12 @@ sample_neighborhood <- function(x0, x, y, interval = 3) {
 }
 
 #' Simulate treatment effects
-#' @inheritParams simulate_counts
 #' @param method One of `c("emp", "emp.paired")`, for two group or
 #' two group with paired samples
 #' @param n_tags The number of tags to simulate
 #' @param ... Arguments passed to sub-functions
 #' @export
-simulate_effects <- function(n_tags, ...) {
+simulate_effects <- function(n_tags, method, ...) {
     method <- match.arg(method)
     fn <- switch(
         method,
@@ -181,7 +180,7 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
 #' @param counts A matrix of (presumably real) RNA-Seq counts
 #' @param design A design matrix to use to fit `edgeR` model to `counts`
 #' @param sim_design A design matrix to use to generate simulated data
-#' @inheritParams sim_counts
+#' @inheritParams simulate_counts
 #' @param ... Additional arguments
 #' to pass to `simulate_counts()`
 #' @export

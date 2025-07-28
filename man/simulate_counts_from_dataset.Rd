@@ -20,7 +20,15 @@ simulate_counts_from_dataset(
 
 \item{design}{A design matrix to use to fit \code{edgeR} model to \code{counts}}
 
+\item{n_tags}{The number of tags to simulate}
+
 \item{sim_design}{A design matrix to use to generate simulated data}
+
+\item{offset_options}{A list of options to control the behavior of
+\code{simulate_offsets()}}
+
+\item{effects_options}{A list of options to control the behavior of
+\code{simulate_effects()}}
 
 \item{...}{Additional arguments
 to pass to \code{simulate_counts()}}
