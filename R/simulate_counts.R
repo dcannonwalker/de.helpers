@@ -31,7 +31,7 @@ simulate_effects <- function(n_tags, method = c("emp.paired"), ...) {
         method,
         # dst = simulate_effects.dst,
         # emp = simulate_effects.emp,
-        emp.paired = simulated_effects.emp.paired
+        emp.paired = simulate_effects.emp.paired
     )
     effects <- fn(n_tags, ...)
     return(effects)
