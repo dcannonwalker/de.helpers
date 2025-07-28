@@ -21,7 +21,7 @@ fit_edgeR <- function(counts, design, ...) {
         "PValue",
         "FDR"
     )
-    if (colnames(out) != expected_colnames)
+    if (sum(colnames(out) != expected_colnames) != 0)
         warning("topTags colnames not as expected")
     out <- .set_colnames(out)
     return(out)
@@ -52,7 +52,7 @@ fit_DESeq2 <- function(counts, design, ...) {
         "pvalue",
         "padj"
     )
-    if (colnames(res) != expected_colnames)
+    if (sum(colnames(res) != expected_colnames) != 0)
         warning("results columns not as expected")
     out <- res
     out[, 'tag'] <- paste0("tag", 1:nrow(counts))
@@ -89,7 +89,7 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
         "adj.P.Val",
         "B"
     )
-    if (colnames(res) != expected_colnames)
+    if (sum(colnames(res) != expected_colnames) != 0)
         warning("topTable columns not as expected")
     out <- out[, c(1, 2, 3, 5, 6)]
     out <- .set_colnames(out)
