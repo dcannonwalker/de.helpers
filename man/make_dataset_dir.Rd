@@ -5,7 +5,11 @@
 \title{Set up a directory to contain all the files for a single simulated data set
 within a simulation study}
 \usage{
-make_dataset_dir(dataset_id, simulation_id, root = "out/simulation_studies")
+make_dataset_dir(
+  dataset_id,
+  simulation_id,
+  root = file.path("out", "simulation_studies")
+)
 }
 \arguments{
 \item{dataset_id}{The data set identifier}

@@ -4,7 +4,7 @@
 \alias{make_sim_dir}
 \title{Set up a directory to contain all files for a given simulation study}
 \usage{
-make_sim_dir(simulation_id, root = "out/simulation_studies")
+make_sim_dir(simulation_id, root = file.path("out", "simulation_studies"))
 }
 \arguments{
 \item{simulation_id}{The simulation study identifier}

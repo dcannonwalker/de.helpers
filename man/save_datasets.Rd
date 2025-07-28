@@ -4,7 +4,12 @@
 \alias{save_datasets}
 \title{Save simulated data sets for a simulation study}
 \usage{
-save_datasets(simulation_id, sim_data, design, root = "out/simulation_studies")
+save_datasets(
+  simulation_id,
+  sim_data,
+  design,
+  root = file.path("out", "simulation_studies")
+)
 }
 \arguments{
 \item{simulation_id}{The simulation study identifier}
