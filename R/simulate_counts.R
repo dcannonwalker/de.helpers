@@ -25,7 +25,7 @@ sample_neighborhood <- function(x0, x, y, interval = 3) {
 #' @param n_tags The number of tags to simulate
 #' @param ... Arguments passed to sub-functions
 #' @export
-simulate_effects <- function(n_tags, method, ...) {
+simulate_effects <- function(n_tags, method = c("emp.paired"), ...) {
     method <- match.arg(method)
     fn <- switch(
         method,

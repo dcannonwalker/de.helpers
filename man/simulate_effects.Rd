@@ -4,7 +4,7 @@
 \alias{simulate_effects}
 \title{Simulate treatment effects}
 \usage{
-simulate_effects(n_tags, method, ...)
+simulate_effects(n_tags, method = c("emp.paired"), ...)
 }
 \arguments{
 \item{n_tags}{The number of tags to simulate}
