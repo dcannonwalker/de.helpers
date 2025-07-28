@@ -10,7 +10,8 @@ yesno <- function(x) {
 #' @param simulation_id The simulation study identifier
 #' @param root The parent directory for all simulation studies
 #' @export
-make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
+make_sim_dir <- function(simulation_id,
+                         root = file.path("out", "simulation_studies")) {
     path <- file.path(root, simulation_id)
     exists <- dir.exists(path)
     if (exists) {
@@ -46,7 +47,8 @@ make_sim_dir <- function(simulation_id, root = "out/simulation_studies") {
 #' @param dataset_id The data set identifier
 #' @inheritParams make_sim_dir
 #' @export
-make_dataset_dir <- function(dataset_id, simulation_id, root = "out/simulation_studies") {
+make_dataset_dir <- function(dataset_id, simulation_id,
+                             root = file.path("out", "simulation_studies")) {
     path <- file.path(root, simulation_id, dataset_id)
     exists <- dir.exists(path)
     if (exists) {
@@ -113,7 +115,7 @@ generate_id <- function(n_ids = 1, n_char = 10, ids_to_check = NULL,
 #' @param design The design matrix for the simulated counts
 #' @export
 save_datasets <- function(simulation_id, sim_data, design,
-                          root = "out/simulation_studies") {
+                          root = file.path("out", "simulation_studies")) {
     simulation_root <- file.path(root, simulation_id)
     message(
         glue::glue("Saving design matrix to",
@@ -131,5 +133,5 @@ save_datasets <- function(simulation_id, sim_data, design,
                         file.path(dataset_root, tbl))
         })
     })
-    message("Simulated data sets saved!")
+    message("Simulated data sets")
 }
