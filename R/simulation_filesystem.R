@@ -131,4 +131,5 @@ save_datasets <- function(simulation_id, sim_data, design,
                         file.path(dataset_root, tbl))
         })
     })
+    message("Simulated data sets saved!")
 }
