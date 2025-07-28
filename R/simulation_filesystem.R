@@ -125,7 +125,7 @@ save_datasets <- function(simulation_id, sim_data, design,
         lapply(names(sim_data[[dataset_id]]), function(tbl) {
             message(
                 glue::glue("Saving {tbl} to",
-                           " {file.path(data.set_root, tbl)}...")
+                           " {file.path(dataset_root, tbl)}...")
             )
             write.table(sim_data[[dataset_id]][[tbl]],
                         file.path(dataset_root, tbl))
