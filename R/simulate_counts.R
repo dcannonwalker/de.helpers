@@ -204,7 +204,9 @@ simulate_counts_from_dataset <- function(counts, design,
     } else {
         out <- list(
             counts = sim$counts,
-            effects = sim$effects
+            effects = sim$effects,
+            offsets = sim$offsets,
+            dispersion = sim$dispersions
         )
     }
     return(out)
