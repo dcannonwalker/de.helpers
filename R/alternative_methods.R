@@ -6,13 +6,20 @@
 #' @param ... Additional parameters to pass on
 #' @export
 fit_edgeR <- function(counts, design, ...) {
-    y <- DGEList(counts = counts,
-                 genes = paste0("tag", 1:nrow(counts)),
-                 group = design[, 2])
-    y <- normLibSizes(y)
-    y <- estimateDisp(y)
-    et <- edgeR::exactTest(y)
-    out <- edgeR::topTags(et, n = nrow(et$table), sort.by = "none")
+    if (ncol(design) == 2) {
+        y <- DGEList(counts = counts,
+                     genes = paste0("tag", 1:nrow(counts)),
+                     group = design[, 2])
+        y <- normLibSizes(y)
+        y <- estimateDisp(y)
+        et <- edgeR::exactTest(y)
+    } else if (ncol(design) > 2) {
+        message("Using ")
+    }
+
+    out <- data.frame(
+        edgeR::topTags(et, n = nrow(et$table), sort.by = "none")
+    )
     # these might change when using `glmLRT()` etc.
     expected_colnames <- c(
         "genes",
@@ -41,7 +48,7 @@ fit_DESeq2 <- function(counts, design, ...) {
                                         ), design = ~trt)
     y <- DESeq2::DESeq(y)
     expected_rn <- c("Intercept", "trt_1_vs_0")
-    if (DESeq2::resultsNames(y) != expected_rn)
+    if (sum(DESeq2::resultsNames(y) != expected_rn) != 0)
         warning("resultsNames not as expected")
     res <- DESeq2::results(y, name="trt_1_vs_0")
     expected_colnames <- c(
@@ -70,7 +77,7 @@ fit_DESeq2 <- function(counts, design, ...) {
 #' @export
 fit_limma <- function(counts, design, use_voom = TRUE, ...) {
     y <- DGEList(counts = counts,
-                 genes = paste0("tag", 1:nrow(sim$counts)),
+                 genes = paste0("tag", 1:nrow(counts)),
                  group = design[, 2])
     y <- normLibSizes(y)
     if (use_voom) {
