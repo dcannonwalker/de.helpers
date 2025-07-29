@@ -55,7 +55,6 @@ fit_edgeR <- function(counts, design, ...) {
 #' @inheritParams fit_edgeR
 #' @export
 fit_DESeq2 <- function(counts, design, ...) {
-    # second column of design must be treatment group
     trt <- design[, ncol(design)]
     rownames(counts) <- colnames(counts) <- NULL
     y <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
@@ -63,10 +62,10 @@ fit_DESeq2 <- function(counts, design, ...) {
                                             trt = factor(trt)
                                         ), design = design)
     y <- DESeq2::DESeq(y)
-    expected_rn <- c("Intercept", "trt_1_vs_0")
+    expected_rn <- colnames(design)
     if (sum(DESeq2::resultsNames(y) != expected_rn) != 0)
         warning("resultsNames not as expected")
-    res <- DESeq2::results(y, name="trt_1_vs_0")
+    res <- DESeq2::results(y, name=colnames(design)[ncol(design)])
     expected_colnames <- c(
         "baseMean",
         "log2FoldChange",
