@@ -4,7 +4,10 @@
 #' @export
 run_method <- function(simulation_id, dataset_id, method,
                        root = file.path("out", "simulation_studies")) {
-    design <- read.table(file.path(root, simulation_id, "design"), header = TRUE)
+    design <-
+        as.matrix(
+            read.table(file.path(root, simulation_id, "design"), header = TRUE, )
+        )
     counts <- read.table(file.path(root, simulation_id, dataset_id, "counts"), header = TRUE)
     method_fn <- switch(method,
                         edgeR = fit_edgeR,
