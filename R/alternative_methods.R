@@ -57,6 +57,7 @@ fit_edgeR <- function(counts, design, ...) {
 fit_DESeq2 <- function(counts, design, ...) {
     # second column of design must be treatment group
     trt <- design[, ncol(design)]
+    rownames(counts) <- colnames(counts) <- NULL
     y <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
                                         colData = data.frame(
                                             trt = factor(trt)
