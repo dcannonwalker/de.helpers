@@ -92,8 +92,7 @@ fit_DESeq2 <- function(counts, design, ...) {
 #' @export
 fit_limma <- function(counts, design, use_voom = TRUE, ...) {
     y <- DGEList(counts = counts,
-                 genes = paste0("tag", 1:nrow(counts)),
-                 group = design[, 2])
+                 genes = paste0("tag", 1:nrow(counts)))
     y <- normLibSizes(y)
     if (use_voom) {
         fit <- .fit_limma(y, design, fn = limma::voom, trend = FALSE)
@@ -111,7 +110,7 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
         "adj.P.Val",
         "B"
     )
-    if (sum(colnames(res) != expected_colnames) != 0)
+    if (sum(colnames(out) != expected_colnames) != 0)
         warning("topTable columns not as expected")
     out <- out[, c(1, 2, 3, 5, 6)]
     out <- .set_colnames(out)
