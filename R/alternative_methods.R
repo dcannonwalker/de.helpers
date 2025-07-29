@@ -56,11 +56,11 @@ fit_edgeR <- function(counts, design, ...) {
 #' @export
 fit_DESeq2 <- function(counts, design, ...) {
     # second column of design must be treatment group
-    trt <- design[, 2]
+    trt <- design[, ncol(design)]
     y <- DESeq2::DESeqDataSetFromMatrix(countData = counts,
                                         colData = data.frame(
                                             trt = factor(trt)
-                                        ), design = ~trt)
+                                        ), design = design)
     y <- DESeq2::DESeq(y)
     expected_rn <- c("Intercept", "trt_1_vs_0")
     if (sum(DESeq2::resultsNames(y) != expected_rn) != 0)
