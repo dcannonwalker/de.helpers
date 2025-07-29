@@ -102,7 +102,7 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
     }
     out <- limma::topTable(fit, coef = ncol(design))
     expected_colnames <- c(
-        "ID",
+        "genes",
         "logFC",
         "AveExpr",
         "t",
