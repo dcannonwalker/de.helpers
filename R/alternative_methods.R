@@ -7,18 +7,25 @@
 #' @export
 fit_edgeR <- function(counts, design, ...) {
     if (ncol(design) == 2) {
+        message("Using exact test")
         y <- DGEList(counts = counts,
                      genes = paste0("tag", 1:nrow(counts)),
                      group = design[, 2])
         y <- normLibSizes(y)
         y <- estimateDisp(y)
-        et <- edgeR::exactTest(y)
+        tr <- edgeR::exactTest(y)
     } else if (ncol(design) > 2) {
-        message("Using ")
+        message("Using glm + lrt")
+        y <- DGEList(counts = counts,
+                     genes = paste0("tag", 1:nrow(counts)))
+        y <- normLibSizes(y)
+        y <- estimateDisp(y, design = design)
+        fit <- edgeR::glmFit(y, design = design)
+        tr <- edgeR::glmLRT(fit)
     }
 
     out <- data.frame(
-        edgeR::topTags(et, n = nrow(et$table), sort.by = "none")
+        edgeR::topTags(tr, n = nrow(tr$table), sort.by = "none")
     )
     # these might change when using `glmLRT()` etc.
     expected_colnames <- c(
