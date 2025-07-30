@@ -1,9 +1,12 @@
 #' Fit a model to saved simulated data
 #' @inheritParams make_sim_dir
 #' @inheritParams make_dataset_dir
+#' @param method The differential expression analysis method to run
+#' @param ... Additional arguments passed to the selected method
 #' @export
-run_method <- function(simulation_id, dataset_id, method,
-                       root = file.path("out", "simulation_studies")) {
+run_method <- function(simulation_id, dataset_id, method = c("edgeR", "DESeq2", "limma", "ngstan"),
+                       root = file.path("out", "simulation_studies"), ...) {
+    method <- match.arg(method)
     design <-
         as.matrix(
             read.table(file.path(root, simulation_id, "design"), header = TRUE)
@@ -14,7 +17,7 @@ run_method <- function(simulation_id, dataset_id, method,
                         DESeq2 = fit_DESeq2,
                         limma = fit_limma,
                         ngstan = fit_ngstan)
-    fit <- method_fn(counts = counts, design = design)
+    fit <- method_fn(counts = counts, design = design, ...)
     message(
         glue::glue("Saving fit to",
                    " {file.path(root, simulation_id, dataset_id, paste0(method, '.qs2'))}")
