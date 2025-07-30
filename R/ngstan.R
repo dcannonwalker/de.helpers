@@ -12,7 +12,7 @@
 #' @export
 get_contrast_posterior_mean <- function(contrast, comps, d_pmf, beta) {
     cp <- ngstan::get_contrast_posterior(contrast, comps, d_pmf, beta)
-    return(apply(cp, 1:2, mean))
+    return(apply(cp, 3, mean))
 }
 #' Get the posterior mean estimated log2 fold change
 #'
