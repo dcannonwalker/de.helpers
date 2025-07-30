@@ -11,7 +11,6 @@
 #' @param beta The `beta` draws
 #' @export
 get_contrast_posterior_mean <- function(contrast, comps, d_pmf, beta) {
-    draws <- fit$draws()
     cp <- ngstan::get_contrast_posterior(contrast, comps, d_pmf, beta)
     return(apply(cp, 1:2, mean))
 }
