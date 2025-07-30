@@ -148,7 +148,7 @@ fit_ngstan <- function(counts, design,
     }
     y <- ngstan::seqlist$new(
         counts = counts,
-        tags = paste0("tag", 1:nrow(sim$counts))
+        tags = paste0("tag", 1:nrow(counts))
     )
     y$set_fixed_design(fixed_design = design)
     y$set_mixture_probabilities(c(1, 0.8))
