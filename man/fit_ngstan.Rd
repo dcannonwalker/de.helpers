@@ -4,12 +4,28 @@
 \alias{fit_ngstan}
 \title{Fit a standard \code{ngstan} pipeline for two group comparison}
 \usage{
-fit_ngstan(counts, design, ...)
+fit_ngstan(
+  counts,
+  design,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  parallel_chains = 4,
+  grainsize = NULL,
+  ...
+)
 }
 \arguments{
 \item{counts}{A matrix of counts; columns are samples, rows are tags}
 
 \item{design}{A design matrix for the columns of \code{counts}}
+
+\item{iter_warmup}{Warmup iterations for Stan model}
+
+\item{iter_sampling}{Sampling iterations for Stan model}
+
+\item{parallel_chains}{Number of parallel chains for Stan model}
+
+\item{grainsize}{Grainsize for multi-thread Stan model}
 
 \item{...}{Additional parameters to pass on}
 }

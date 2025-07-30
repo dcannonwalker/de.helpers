@@ -130,8 +130,22 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
 
 #' Fit a standard `ngstan` pipeline for two group comparison
 #' @inheritParams fit_edgeR
+#' @param iter_warmup Warmup iterations for Stan model
+#' @param iter_sampling Sampling iterations for Stan model
+#' @param parallel_chains Number of parallel chains for Stan model
+#' @param grainsize Grainsize for multi-thread Stan model
 #' @export
-fit_ngstan <- function(counts, design, ...) {
+fit_ngstan <- function(counts, design,
+                       iter_warmup = 1000,
+                       iter_sampling = 1000,
+                       parallel_chains = 4,
+                       grainsize = NULL, ...) {
+    if (is.null(grainsize)) {
+        grainsize <- nrow(counts) / 8
+        message(glue::glue(
+            "Using grainsize = {grainsize} (nrow(counts) / 8)..."
+            ))
+    }
     y <- ngstan::seqlist$new(
         counts = counts,
         tags = paste0("tag", 1:nrow(sim$counts))
@@ -140,10 +154,10 @@ fit_ngstan <- function(counts, design, ...) {
     y$set_mixture_probabilities(c(1, 0.8))
     y$initialize_standata()
     fit <- y$run_model(run_estimation = TRUE, use_multithread = TRUE,
-                       grainsize = 125,
-                       iter_warmup = 1000,
-                       iter_sampling = 1000,
-                       parallel_chains = 4,
+                       grainsize = grainsize,
+                       iter_warmup = iter_warmup,
+                       iter_sampling = iter_sampling,
+                       parallel_chains = parallel_chains,
                        modify_in_place = FALSE)
     draws <- fit$draws()
     comps <- y$standata$comps
