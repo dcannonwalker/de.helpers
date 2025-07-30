@@ -155,14 +155,15 @@ fit_ngstan <- function(counts, design,
     if (ncol(design) == 2) {
         fixed_design <- design
     } else if (ncol(design) > 2) {
-        message("First and last columns of design assumed to be fixed effects...")
+        message("First column of design assumed to be intercept...")
+        message("Last column of design assumed to be treatment effect")
         message("Middle columns of design assumed to be random effects (sample)...")
-        fixed_design <- design[, c(1, ncol(design))]
+        fixed_design <- design[, ncol(design)] # intercept is already built in
         random_design <- design[, seq(2, ncol(design) - 1)]
         y$set_random_design(random_design = random_design)
     }
     y$set_fixed_design(fixed_design = fixed_design)
-    y$set_mixture_probabilities(c(1, 0.8))
+    y$set_mixture_probabilities(0.8)
     y$initialize_standata()
     fit <- y$run_model(run_estimation = TRUE, use_multithread = TRUE,
                        grainsize = grainsize,
