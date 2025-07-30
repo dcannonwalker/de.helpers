@@ -146,11 +146,22 @@ fit_ngstan <- function(counts, design,
             "Using grainsize = {grainsize} (nrow(counts) / 8)..."
             ))
     }
+
     y <- ngstan::seqlist$new(
         counts = counts,
         tags = paste0("tag", 1:nrow(counts))
     )
-    y$set_fixed_design(fixed_design = design)
+
+    if (ncol(design) == 2) {
+        fixed_design <- design
+    } else if (ncol(design) > 2) {
+        message("First and last columns of design assumed to be fixed effects...")
+        message("Middle columns of design assumed to be random effects (sample)...")
+        fixed_design <- design[, c(1, ncol(design))]
+        random_design <- design[, seq(2, ncol(design) - 1)]
+        y$set_random_design(random_design = random_design)
+    }
+    y$set_fixed_design(fixed_design = fixed_design)
     y$set_mixture_probabilities(c(1, 0.8))
     y$initialize_standata()
     fit <- y$run_model(run_estimation = TRUE, use_multithread = TRUE,
