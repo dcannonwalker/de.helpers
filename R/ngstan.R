@@ -19,7 +19,7 @@ get_contrast_posterior_mean <- function(contrast, comps, d_pmf, beta) {
 #' This currently assumes that there is only a single beta
 #' @inheritParams get_contrast_posterior_mean
 #' @export
-get_log2fc_posterior_mean <- function(comps, d_pfm, beta) {
+get_log2fc_posterior_mean <- function(comps, d_pmf, beta) {
     # don't drop the dim to keep the same dims as beta
     prob1comp <- d_pmf[, , , which(comps == 1), drop = FALSE]
     log2fc <- log(exp(1), base = 2) * beta * prob1comp
