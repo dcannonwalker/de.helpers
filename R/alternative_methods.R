@@ -158,7 +158,7 @@ fit_ngstan <- function(counts, design,
         message("First column of design assumed to be intercept...")
         message("Last column of design assumed to be treatment effect")
         message("Middle columns of design assumed to be random effects (sample)...")
-        fixed_design <- design[, ncol(design)] # intercept is already built in
+        fixed_design <- design[, ncol(design), drop = FALSE] # intercept is already built in
         random_design <- design[, seq(2, ncol(design) - 1)]
         y$set_random_design(random_design = random_design)
     }
