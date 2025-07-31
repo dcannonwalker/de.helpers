@@ -14,13 +14,6 @@ fit_edgeR <- function(counts, design, ...) {
         y <- normLibSizes(y)
         y <- estimateDisp(y)
         tr <- edgeR::exactTest(y)
-        expected_colnames <- c(
-            "genes",
-            "logFC",
-            "logCPM",
-            "PValue",
-            "FDR"
-        )
     } else if (ncol(design) > 2) {
         message("Using glm + lrt")
         y <- DGEList(counts = counts,
@@ -29,18 +22,19 @@ fit_edgeR <- function(counts, design, ...) {
         y <- estimateDisp(y, design = design)
         fit <- edgeR::glmFit(y, design = design)
         tr <- edgeR::glmLRT(fit)
-        expected_colnames <- c(
-            "genes",
-            "logFC",
-            "logCPM",
-            "LR",
-            "PValue",
-            "FDR"
-        )
     }
 
     out <- data.frame(
         edgeR::topTags(tr, n = nrow(tr$table), sort.by = "none")
+    )
+    # drop column from glm lrt output
+    out <- out[, colnames(out) != "LR"]
+    expected_colnames <- c(
+        "genes",
+        "logFC",
+        "logCPM",
+        "PValue",
+        "FDR"
     )
 
     if (sum(colnames(out) != expected_colnames) != 0)
