@@ -135,3 +135,32 @@ save_datasets <- function(simulation_id, sim_data, design,
     })
     message("Simulated data sets")
 }
+
+#' Read in all the saved fits for a given simulation study and method
+#' @inheritParams make_sim_dir
+#' @inheritParams make_dataset_dir
+#' @param method The name of the method whose fits we want to retrieve
+read_method_data <- function(
+        simulation_id,
+        root = "out/simulation_studies",
+        method = c("edgeR",
+                   "DESeq2",
+                   "limma",
+                   "ngstan")
+) {
+    method <- match.arg(method)
+    dataset_ids <- read.table(
+        file.path(root, simulation_id, "dataset_ids.txt"),
+        header = TRUE
+        )
+    out_list <- lapply(dataset_ids$dataset_id, .read_method_data,
+           simulation_id = simulation_id, method = method, root = root)
+
+}
+
+.read_method_data <- function(dataset_id, simulation_id, root, method) {
+    qs2::qs_read(
+        file.path(root, simulation_id, dataset_id,
+                  glue::glue("{method}.qs2"))
+    )
+}
