@@ -159,8 +159,15 @@ read_method_data <- function(
 }
 
 .read_method_data <- function(dataset_id, simulation_id, root, method) {
-    qs2::qs_read(
+    method_data <- qs2::qs_read(
         file.path(root, simulation_id, dataset_id,
                   glue::glue("{method}.qs2"))
     )
+    effects <- read.table(
+        file.path(root, simulation_id, dataset_id,
+                  "effects"), row.names = NULL
+    )
+    true_null <- effects[, "b1"] == 0
+    data.frame(simulation_id = simulation_id, dataset_id = dataset_id,
+               true_null = true_null, method_data)
 }
