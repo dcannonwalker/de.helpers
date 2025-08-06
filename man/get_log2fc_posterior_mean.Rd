@@ -4,10 +4,12 @@
 \alias{get_log2fc_posterior_mean}
 \title{Get the posterior mean estimated log2 fold change}
 \usage{
-get_log2fc_posterior_mean(comps, d_pfm, beta)
+get_log2fc_posterior_mean(comps, d_pmf, beta)
 }
 \arguments{
 \item{comps}{The \code{comps} matrix taken from \code{standata}}
+
+\item{d_pmf}{The \code{d_pmf} draws}
 
 \item{beta}{The \code{beta} draws}
 }

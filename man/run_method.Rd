@@ -7,8 +7,9 @@
 run_method(
   simulation_id,
   dataset_id,
-  method,
-  root = file.path("out", "simulation_studies")
+  method = c("edgeR", "DESeq2", "limma", "ngstan"),
+  root = file.path("out", "simulation_studies"),
+  ...
 )
 }
 \arguments{
@@ -16,7 +17,11 @@ run_method(
 
 \item{dataset_id}{The data set identifier}
 
+\item{method}{The differential expression analysis method to run}
+
 \item{root}{The parent directory for all simulation studies}
+
+\item{...}{Additional arguments passed to the selected method}
 }
 \description{
 Fit a model to saved simulated data
