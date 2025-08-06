@@ -140,6 +140,7 @@ save_datasets <- function(simulation_id, sim_data, design,
 #' @inheritParams make_sim_dir
 #' @inheritParams make_dataset_dir
 #' @param method The name of the method whose fits we want to retrieve
+#' @export
 read_method_data <- function(
         simulation_id,
         root = "out/simulation_studies",
