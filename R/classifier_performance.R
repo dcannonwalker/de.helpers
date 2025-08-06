@@ -88,6 +88,7 @@ tpr_for_fpr <- function(roc, x0) {
     # in case there are 1+ fp before the first tp
     if (idx == -Inf) return(0)
     if (roc[idx, 'fpr'] == x0) return(roc[idx, 'tpr'])
+    if (idx == nrow(roc)) return(roc[idx, 'tpr']) # this is a bandaid
     return(
         interpolate(
             x0,
