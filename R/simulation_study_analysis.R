@@ -40,6 +40,6 @@ make_fdr_curve <- function(method_data, misleading_names = FALSE) {
 make_average_fdr_curve <- function(method_data, x0) {
     fdr_curves <- lapply(method_data, make_fdr_curve, misleading_names = TRUE)
     average_fdr <- fawcett3(x0, fdr_curves)
-    colnames(average_fdr) <- c("fdr", "tfdr")
+    colnames(average_fdr) <- c("fdr", paste0("tfdr", 1:length(rocs)))
     average_fdr
 }
