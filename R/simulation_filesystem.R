@@ -133,7 +133,7 @@ save_datasets <- function(simulation_id, sim_data, design,
                         file.path(dataset_root, tbl))
         })
     })
-    message("Simulated data sets")
+    message("Simulated data sets saved")
 }
 
 #' Read in all the saved fits for a given simulation study and method
@@ -153,9 +153,9 @@ read_method_data <- function(
     dataset_ids <- read.table(
         file.path(root, simulation_id, "dataset_ids.txt"),
         header = TRUE
-        )
+    )
     out_list <- lapply(dataset_ids$dataset_id, .read_method_data,
-           simulation_id = simulation_id, method = method, root = root)
+                       simulation_id = simulation_id, method = method, root = root)
 
 }
 
@@ -172,3 +172,43 @@ read_method_data <- function(
     data.frame(simulation_id = simulation_id, dataset_id = dataset_id,
                true_null = true_null, method_data)
 }
+
+#' A wrapper to create and save average ROC and FDR curves
+#' @inheritParams read_method_data
+#' @inheritParams make_average_roc_curve
+#' @export
+save_method_curves <- function(
+        simulation_id,
+        root = "out/simulation_studies",
+        method = c("edgeR",
+                   "DESeq2",
+                   "limma",
+                   "ngstan"),
+        x0 = seq(0, 1, length = 100)
+) {
+    method_data <- read_method_data(
+        simulation_id = simulation_id,
+        root = root,
+        method = method
+    )
+    roc_curve <- make_average_roc_curve(method_data = method_data, x0 = x0)
+    fdr_curve <- make_average_fdr_curve(method_data = method_data, x0 = x0)
+    roc_path <- file.path(root, simulation_id, glue::glue("{method}_roc_curve"))
+    fdr_path <- file.path(root, simulation_id, glue::glue("{method}_fdr_curve"))
+    message(glue::glue("Writing ROC curve to {roc_path}..."))
+    write.table(roc_curve,
+                file.path(root,
+                          simulation_id,
+                          glue::glue("{method}_roc_curve")))
+    message(glue::glue("Writing FDR curve to {fdr_path}..."))
+    write.table(fdr_curve,
+                file.path(root,
+                          simulation_id,
+                          glue::glue("{method}_fdr_curve")))
+
+    invisible(list(
+        roc_curve = roc_curve,
+        fdr_curve = fdr_curve
+    ))
+}
+
