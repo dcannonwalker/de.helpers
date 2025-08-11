@@ -300,7 +300,7 @@ save_curve_plots <- function(
     type <- match.arg(type, several.ok = TRUE)
     plots <- plot_curves(simulation_id = simulation_id, root = root,
                          method = method, type = type)
-    imap(plots, .save_curve_plots, simulation_id = simulation_id, root = root)
+    purrr::imap(plots, .save_curve_plots, simulation_id = simulation_id, root = root)
 }
 
 .save_curve_plots <- function(plot, plot_name, simulation_id, root) {
