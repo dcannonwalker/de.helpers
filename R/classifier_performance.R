@@ -72,14 +72,18 @@ trapezoid_area <- function(x1, x2, y1, y2) {
 #' Algorithm 3 from Fawcett 2006; vertical averaging of ROC curves
 #' @param x0 A vector of fpr values
 #' @param rocs A list of ROC curves
-fawcett3 <- function(x0, rocs) {
+fawcett3 <- function(x0, rocs, average = TRUE) {
     out <- matrix(nrow = length(x0), ncol = length(rocs) + 1)
     out[, 1] <- x0
     for (i in seq(1, length(x0))) {
         out[i, 2:ncol(out)] <- sapply(rocs, tpr_for_fpr, x0 = x0[i])
     }
+    if (average) {
+        average_tpr <- rowMeans(out[, 2:ncol(out)])
+        return(cbind(fpr = out[1, ], average_tpr = average_tpr))
+    }
     colnames(out) <- c("fpr", paste0("tpr", 1:length(rocs)))
-    return(out)
+    out
 }
 
 #' For a given fpr, find the fpr values on the ROC curve that bracket it
