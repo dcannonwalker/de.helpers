@@ -173,9 +173,16 @@ read_method_data <- function(
                true_null = true_null, method_data)
 }
 
+#' Get the standard file path for saved ROC or FDR curve data
+#' @inheritParams save_method_curves
+get_curve_path <- function(simulation_id, root, method, type) {
+    file.path(root, simulation_id, glue::glue("{method}_{type}_curve"))
+}
+
 #' A wrapper to create and save average ROC and FDR curves
 #' @inheritParams read_method_data
 #' @inheritParams make_average_roc_curve
+#' @param type ROC, FDR, or both?
 #' @export
 save_method_curves <- function(
         simulation_id,
@@ -184,31 +191,89 @@ save_method_curves <- function(
                    "DESeq2",
                    "limma",
                    "ngstan"),
+        type = c("roc, fdr"),
         x0 = seq(0, 1, length = 100)
 ) {
+    method <- match.arg(method)
+    type <- match.arg(type, several.ok = TRUE)
     method_data <- read_method_data(
         simulation_id = simulation_id,
         root = root,
         method = method
     )
-    roc_curve <- make_average_roc_curve(method_data = method_data, x0 = x0)
-    fdr_curve <- make_average_fdr_curve(method_data = method_data, x0 = x0)
-    roc_path <- file.path(root, simulation_id, glue::glue("{method}_roc_curve"))
-    fdr_path <- file.path(root, simulation_id, glue::glue("{method}_fdr_curve"))
-    message(glue::glue("Writing ROC curve to {roc_path}..."))
-    write.table(roc_curve,
-                file.path(root,
-                          simulation_id,
-                          glue::glue("{method}_roc_curve")))
-    message(glue::glue("Writing FDR curve to {fdr_path}..."))
-    write.table(fdr_curve,
-                file.path(root,
-                          simulation_id,
-                          glue::glue("{method}_fdr_curve")))
 
-    invisible(list(
-        roc_curve = roc_curve,
-        fdr_curve = fdr_curve
-    ))
+    out <- lapply(type, .save_method_curves, simulation_id = simulation_id,
+                  root = root, method = method, method_data = method_data,
+                  x0 = x0)
+    names(out) <- type
+
+    invisible(out)
 }
 
+.save_method_curves <- function(type, simulation_id, root, method,
+                                method_data, x0) {
+    curve_fn <- switch(type,
+                       roc = make_average_roc_curve,
+                       fdr = make_average_fdr_curve)
+    curve <- curve_fn(method_data = method_data, x0 = x0)
+    path <- get_curve_path(simulation_id, root, method, type = type)
+    message(glue::glue("Writing {toupper(type)} curve to {path}..."))
+    write.table(curve, path)
+    curve
+}
+
+#' Read in the ROC or FDR curve data for a given method
+#' @inheritParams read_method_data
+#' @export
+read_method_curves <- function(
+        simulation_id,
+        root = "out/simulation_studies",
+        method = c("edgeR",
+                   "DESeq2",
+                   "limma",
+                   "ngstan"),
+        type = c("roc", "fdr")
+) {
+    method <- match.arg(method, several.ok = TRUE)
+    names(method) <- method
+    type <- match.arg(type, several.ok = TRUE)
+    names(type) <- type
+    lapply(type, .read_method_curves, simulation_id = simulation_id,
+           root = root, method = method)
+}
+
+.read_method_curves <- function(method, simulation_id, root, type) {
+    if (length(method) > 1) {
+        curves <- lapply(method, .read_method_curves,
+                         simulation_id = simulation_id,
+                         root = root, type = type)
+        return(dplyr::bind_rows(curves, .id = "method"))
+    }
+    read.table(
+        get_curve_path(simulation_id, root, method, type)
+    )
+}
+
+#' Create plots of ROC and FDR curves
+#' @inheritParams read_method_data
+#' @export
+plot_curves <- function(
+        simulation_id,
+        root = "out/simulation_studies",
+        method = c("edgeR",
+                   "DESeq2",
+                   "limma",
+                   "ngstan"),
+        type = c("roc", "fdr")
+) {
+    method <- match.arg(method, several.ok = TRUE)
+    type <- match.arg(type, several.ok = TRUE)
+    curve_data <- read_method_curves(simulation_id = simulation_id,
+                                     root = root, method = method, type = type)
+    lapply(curve_data, .plot_curves)
+}
+
+# .plot_curves <- function(curve_data) {
+#     ggplot2::ggplot(curve_data, aes())
+# }
+# save_curve_plots <- function()
