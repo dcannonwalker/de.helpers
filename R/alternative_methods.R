@@ -59,7 +59,9 @@ fit_DESeq2 <- function(counts, design, ...) {
     expected_rn <- colnames(design)
     if (sum(DESeq2::resultsNames(y) != expected_rn) != 0)
         warning("resultsNames not as expected")
-    res <- DESeq2::results(y, name=colnames(design)[ncol(design)])
+    res <- DESeq2::results(y, name=colnames(design)[ncol(design)],
+                           cooksCutoff = FALSE,
+                           independentFiltering = FALSE)
     expected_colnames <- c(
         "baseMean",
         "log2FoldChange",
