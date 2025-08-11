@@ -270,10 +270,41 @@ plot_curves <- function(
     type <- match.arg(type, several.ok = TRUE)
     curve_data <- read_method_curves(simulation_id = simulation_id,
                                      root = root, method = method, type = type)
-    lapply(curve_data, .plot_curves)
+    purrr::imap(curve_data, ~ {.plot_curves(.x, .y)})
 }
 
-# .plot_curves <- function(curve_data) {
-#     ggplot2::ggplot(curve_data, aes())
-# }
-# save_curve_plots <- function()
+.plot_curves <- function(x, type = c("roc", "fdr")) {
+    xaes <- ggplot2::sym(switch(type,
+                                roc = "fpr",
+                                fdr = "fdr"))
+    yaes <- ggplot2::sym(switch(type,
+                                roc = "average_tpr",
+                                fdr = "tfdr"))
+    ggplot2::ggplot(x, ggplot2::aes(!!xaes, !!yaes, color = method)
+    ) + ggplot2::geom_line()
+}
+
+#' Create and save ROC and FDR curves for a simulation study
+#' @inheritParams read_method_data
+#' @export
+save_curve_plots <- function(
+        simulation_id,
+        root = "out/simulation_studies",
+        method = c("edgeR",
+                   "DESeq2",
+                   "limma",
+                   "ngstan"),
+        type = c("roc", "fdr")
+) {
+    method <- match.arg(method, several.ok = TRUE)
+    type <- match.arg(type, several.ok = TRUE)
+    plots <- plot_curves(simulation_id = simulation_id, root = root,
+                         method = method, type = type)
+    imap(plots, .save_curve_plots, simulation_id = simulation_id, root = root)
+}
+
+.save_curve_plots <- function(plot, plot_name, simulation_id, root) {
+    fn <- file.path(root, simulation_id, glue::glue("{simulation_id}_{plot_name}.pdf"))
+    message(glue::glue("Saving {plot_name} plot to {fn}..."))
+    ggplot2::ggsave(filename = fn, plot = plot)
+}

@@ -4,7 +4,7 @@
 \alias{fawcett3}
 \title{Algorithm 3 from Fawcett 2006; vertical averaging of ROC curves}
 \usage{
-fawcett3(x0, rocs)
+fawcett3(x0, rocs, average = TRUE)
 }
 \arguments{
 \item{x0}{A vector of fpr values}
