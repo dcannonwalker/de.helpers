@@ -84,7 +84,7 @@ fawcett3 <- function(x0, rocs) {
 
 #' For a given fpr, find the fpr values on the ROC curve that bracket it
 tpr_for_fpr <- function(roc, x0) {
-    idx <- max(which(roc[, 'fpr'] <= x0))
+    idx <- suppressWarnings(max(which(roc[, 'fpr'] <= x0)))
     # in case there are 1+ fp before the first tp
     if (idx == -Inf) return(0)
     if (roc[idx, 'fpr'] == x0) return(roc[idx, 'tpr'])
