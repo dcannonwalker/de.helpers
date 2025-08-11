@@ -191,7 +191,7 @@ save_method_curves <- function(
                    "DESeq2",
                    "limma",
                    "ngstan"),
-        type = c("roc, fdr"),
+        type = c("roc", "fdr"),
         x0 = seq(0, 1, length = 100)
 ) {
     method <- match.arg(method)
