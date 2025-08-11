@@ -129,7 +129,7 @@ save_datasets <- function(simulation_id, sim_data, design,
                 glue::glue("Saving {tbl} to",
                            " {file.path(dataset_root, tbl)}...")
             )
-            write.table(sim_data[[dataset_id]][[tbl]],
+            write.table(as.matrix(sim_data[[dataset_id]][[tbl]]),
                         file.path(dataset_root, tbl))
         })
     })
