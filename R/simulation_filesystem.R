@@ -180,6 +180,23 @@ get_curve_path <- function(simulation_id, root, method, type) {
 }
 
 #' A wrapper to create and save average ROC and FDR curves
+#' @section Running and analyzing simulation studies:
+#' To use the helpers to run and analyze a simulation study, you're intended
+#' to follow these steps in order:
+#'
+#' 1. Simulate data sets and save them
+#' 2. Fit the set of methods and save their outputs for each data set
+#' 3. Create tables for average ROC and FDR curves and save them
+#' 4. Plot the ROC and FDR curves and save the plots
+#' @section Simulate data:
+#' `generate_id()`, `make_sim_dir()`, `make_dataset_dir()`, `simulate_counts_from_dataset()`,
+#' `save_datasets()`
+#' @section Fit methods:
+#' `run_method()`
+#' @section Create summary tables:
+#' `save_method_curves()`
+#' @section Save plots:
+#' `save_curve_plots()`
 #' @inheritParams read_method_data
 #' @inheritParams make_average_roc_curve
 #' @param type ROC, FDR, or both?

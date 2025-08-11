@@ -27,3 +27,36 @@ the averages of the ROC or FDR curves}
 \description{
 A wrapper to create and save average ROC and FDR curves
 }
+\section{Running and analyzing simulation studies}{
+
+To use the helpers to run and analyze a simulation study, you're intended
+to follow these steps in order:
+\enumerate{
+\item Simulate data sets and save them
+\item Fit the set of methods and save their outputs for each data set
+\item Create tables for average ROC and FDR curves and save them
+\item Plot the ROC and FDR curves and save the plots
+}
+}
+
+\section{Simulate data}{
+
+\code{generate_id()}, \code{make_sim_dir()}, \code{make_dataset_dir()}, \code{simulate_counts_from_dataset()},
+\code{save_datasets()}
+}
+
+\section{Fit methods}{
+
+\code{run_method()}
+}
+
+\section{Create summary tables}{
+
+\code{save_method_curves()}
+}
+
+\section{Save plots}{
+
+\code{save_curve_plots()}
+}
+
