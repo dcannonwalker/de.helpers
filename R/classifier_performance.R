@@ -80,7 +80,7 @@ fawcett3 <- function(x0, rocs, average = TRUE) {
     }
     if (average) {
         average_tpr <- rowMeans(out[, 2:ncol(out)])
-        return(cbind(fpr = out[1, ], average_tpr = average_tpr))
+        return(cbind(fpr = out[, 1], average_tpr = average_tpr))
     }
     colnames(out) <- c("fpr", paste0("tpr", 1:length(rocs)))
     out
