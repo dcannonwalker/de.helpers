@@ -179,18 +179,20 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
 #' to generate a simulated dataset
 #' @param counts A matrix of (presumably real) RNA-Seq counts
 #' @param design A design matrix to use to fit `edgeR` model to `counts`
+#' @param pars Did you already estimate the parameters and save them?
+#' Pass that list in here...
 #' @param sim_design A design matrix to use to generate simulated data
 #' @inheritParams simulate_counts
 #' @param ... Additional arguments
 #' to pass to `simulate_counts()`
 #' @export
-simulate_counts_from_dataset <- function(counts, design,
+simulate_counts_from_dataset <- function(counts, design, pars = NULL,
                                          n_tags,
                                          sim_design,
                                          offset_options,
                                          effects_options,
                                          full_output = FALSE, ...) {
-    pars <- estimate_parameters(counts = counts, design = design)
+    pars <- pars %||% estimate_parameters(counts = counts, design = design)
     sim <- simulate_counts(mean_pars = pars$mean_pars,
                            dispersion_pars = pars$dispersion_pars,
                            offset_pars = pars$offset_pars, n_tags = n_tags,

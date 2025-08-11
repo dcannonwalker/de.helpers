@@ -8,6 +8,7 @@ to generate a simulated dataset}
 simulate_counts_from_dataset(
   counts,
   design,
+  pars = NULL,
   n_tags,
   sim_design,
   offset_options,
@@ -20,6 +21,9 @@ simulate_counts_from_dataset(
 \item{counts}{A matrix of (presumably real) RNA-Seq counts}
 
 \item{design}{A design matrix to use to fit \code{edgeR} model to \code{counts}}
+
+\item{pars}{Did you already estimate the parameters and save them?
+Pass that list in here...}
 
 \item{n_tags}{The number of tags to simulate}
 
