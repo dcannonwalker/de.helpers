@@ -159,9 +159,20 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
                           x = mean_pars[, 1], y = dispersion_pars,
                           interval = dispersion_interval)
     means <- exp(offsets + t(design %*% t(effects)))
+    if (any(means > .Machine$integer.max)) {
+        big_means <- which(means > .Machine$integer.max)
+        warning(glue::glue("Some means are bigger than .Machine$integer.max...\n",
+                           "These are the means for tags: {big_means}"))
+    }
     counts <- matrix(nrow = n_tags, ncol = n_samples)
     for (s in seq(1, n_samples)) {
         counts[, s] <- rnbinom(n_tags, mu = means[, s], size = 1 / dispersions)
+    }
+    if (any(counts > .Machine$integer.max)) {
+        n_too_big <- sum(counts > .Machine$integer.max)
+        warning(glue::glue("Some counts are bigger than .Machine$integer.max...\n",
+                           "Setting a total of {n_too_big} counts to {.Machine$integer.max}..."))
+        counts[counts > .Machine$integer.max] <- .Machine$integer.max
     }
     return(
         list(
