@@ -174,6 +174,17 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
                            "Setting a total of {n_too_big} counts to {.Machine$integer.max}..."))
         counts[counts > .Machine$integer.max] <- .Machine$integer.max
     }
+    if (any(rowSums(counts) == 0)) {
+        all_zero <- rowSums(counts) == 0
+        warning(glue::glue("Some tags have all 0 counts...\n",
+                           "Removing a total of {sum(all_zero)} ",
+                           "rows from the simulated data set..."))
+        counts <- counts[!all_zero, ]
+        effects <- effects[!all_zero, ]
+        offsets <- offsets[!all_zero]
+        dispersions <- dispersions[!all_zero]
+        means <- means[!all_zero]
+    }
     return(
         list(
             counts = counts,
