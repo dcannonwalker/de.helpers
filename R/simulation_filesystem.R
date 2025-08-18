@@ -46,9 +46,11 @@ make_sim_dir <- function(simulation_id,
 #' within a simulation study
 #' @param dataset_id The data set identifier
 #' @inheritParams make_sim_dir
+#' @param doc Add the dataset id to `dataset_ids.txt`?
 #' @export
 make_dataset_dir <- function(dataset_id, simulation_id,
-                             root = file.path("out", "simulation_studies")) {
+                             root = file.path("out", "simulation_studies"),
+                             doc = TRUE) {
     path <- file.path(root, simulation_id, dataset_id)
     exists <- dir.exists(path)
     if (exists) {
@@ -62,18 +64,47 @@ make_dataset_dir <- function(dataset_id, simulation_id,
         } else sel <- TRUE
         if (sel) dir.create(path, recursive = TRUE)
     }
-    docfile <- file.path(root, simulation_id, "dataset_ids.txt")
-    docexists <- file.exists(docfile)
-    append <- FALSE
-    col.names <- TRUE
-    if (docexists) {
-        append <- TRUE
-        col.names <- FALSE
+    if (doc) {
+        docfile <- file.path(root, simulation_id, "dataset_ids.txt")
+        docexists <- file.exists(docfile)
+        append <- FALSE
+        col.names <- TRUE
+        if (docexists) {
+            append <- TRUE
+            col.names <- FALSE
+        }
+        row <- data.frame(dataset_id = dataset_id)
+        write.table(row, file = docfile, append = append,
+                    col.names = col.names, row.names = FALSE)
     }
-    row <- data.frame(dataset_id = dataset_id)
-    write.table(row, file = docfile, append = append,
-                col.names = col.names, row.names = FALSE)
+
     return(path)
+}
+
+#' Remove all existing data set folders from a simulation study
+#' @inheritParams make_sim_dir
+#' @export
+remove_datasets <- function(simulation_id, root = file.path("out", "simulation_studies")) {
+    system2("rm", args = c("-r",
+                           glue::glue("{file.path(root, simulation_id)}/*/")
+    ))
+}
+
+#' Make data set directories for all the data set ids in
+#' `dataset_ids.txt` for a given simulation study
+#' @inheritParams make_sim_dir
+#' @export
+make_dataset_dirs <- function(simulation_id, root = file.path("out", "simulation_studies")) {
+    tryCatch({
+        dataset_ids <- read.table(file.path(root, simulation_id, "dataset_ids.txt"), header = TRUE)
+        dataset_ids <- dataset_ids$dataset_id
+    }, error = function(e) {
+        message("Couldn't read dataset_ids.txt")
+        e
+    })
+    for (id in dataset_ids) {
+        make_dataset_dir(id, simulation_id, root, doc = FALSE)
+    }
 }
 
 #' Generate an identifier

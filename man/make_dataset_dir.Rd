@@ -8,7 +8,8 @@ within a simulation study}
 make_dataset_dir(
   dataset_id,
   simulation_id,
-  root = file.path("out", "simulation_studies")
+  root = file.path("out", "simulation_studies"),
+  doc = TRUE
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ make_dataset_dir(
 \item{simulation_id}{The simulation study identifier}
 
 \item{root}{The parent directory for all simulation studies}
+
+\item{doc}{Add the dataset id to \code{dataset_ids.txt}?}
 }
 \description{
 Set up a directory to contain all the files for a single simulated data set
