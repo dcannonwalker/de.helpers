@@ -169,7 +169,7 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
         counts[, s] <- rnbinom(n_tags, mu = means[, s], size = 1 / dispersions)
     }
     if (any(counts > .Machine$integer.max)) {
-        too_big <- sapply(counts, 1, function(r) sum(r >= .Machine$integer.max) > 0)
+        too_big <- apply(counts, 1, function(r) sum(r >= .Machine$integer.max) > 0)
         warning(glue::glue("Some tags have counts that are bigger than .Machine$integer.max...\n",
                            "Removing a total of {sum(too_big)}",
                            "rows from the simulated data set"))
