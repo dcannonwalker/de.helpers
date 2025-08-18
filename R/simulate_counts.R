@@ -169,10 +169,15 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
         counts[, s] <- rnbinom(n_tags, mu = means[, s], size = 1 / dispersions)
     }
     if (any(counts > .Machine$integer.max)) {
-        n_too_big <- sum(counts > .Machine$integer.max)
-        warning(glue::glue("Some counts are bigger than .Machine$integer.max...\n",
-                           "Setting a total of {n_too_big} counts to {.Machine$integer.max}..."))
-        counts[counts > .Machine$integer.max] <- .Machine$integer.max
+        too_big <- sapply(counts, 1, function(r) sum(r >= .Machine$integer.max) > 0)
+        warning(glue::glue("Some tags have counts that are bigger than .Machine$integer.max...\n",
+                           "Removing a total of {sum(too_big)}",
+                           "rows from the simulated data set"))
+        counts <- counts[!too_big, ]
+        effects <- effects[!too_big, ]
+        offsets <- offsets[!too_big]
+        dispersions <- dispersions[!too_big]
+        means <- means[!too_big]
     }
     if (any(rowSums(counts) == 0)) {
         all_zero <- rowSums(counts) == 0
