@@ -67,22 +67,33 @@ simulate_effects.emp <- function(n_tags, mean_pars, interval = 1,
 #' @param p_null The proportion of tags with no treatment effect
 simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
                                         p_null, b1_min = 0,
-                                        sfx_cols = NULL, ...) {
-    if (is.null(sfx_cols)) {
-        message("Pooling all columns except first and last for sample effects")
-        sfx_cols <- seq(2, ncol(mean_pars) - 1)
-    }
-    b1_pars <- mean_pars[, 2]
+                                        sfx_cols = NULL,
+                                        keep_tag_together = FALSE, ...) {
+    message("First column of 'mean_pars' should be b0, last column should be b1")
     n_null <- ceiling(n_tags * p_null)
-    b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
-    b1 <- c(
-        rep(0, n_null),
-        sample(b1_pars[abs(b1_pars) >= b1_min], n_tags - n_null, replace = TRUE)
-    )
-    sfx_pars <- c(mean_pars[, sfx_cols])
-    sfx <- matrix(sample(sfx_pars, n_tags * n_pairs, replace = TRUE),
-                  nrow = n_tags, ncol = n_pairs)
-    return(cbind(b0, sfx, b1))
+    if (keep_tag_together) {
+        sfx_cols_to_use <- sample(1:length(sfx_cols), n_pairs, replace = TRUE)
+        null_tags <- sample(1:nrow(mean_pars), n_null, replace = TRUE)
+        non_null_tags <- sample(which(abs(mean_pars) >= b1_min), n_tags - n_null, replace = TRUE)
+        out <- mean_pars[c(null_tags, non_null_tags), c(1, sfx_cols_to_use, ncol(mean_pars))]
+        out[1:n_null, ncol(mean_pars)] <- 0
+        return(out)
+    } else {
+        if (is.null(sfx_cols)) {
+            message("Pooling all columns except first and last for sample effects")
+            sfx_cols <- seq(2, ncol(mean_pars) - 1)
+        }
+        b1_pars <- mean_pars[, ncol(mean_pars)]
+        b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
+        b1 <- c(
+            rep(0, n_null),
+            sample(b1_pars[abs(b1_pars) >= b1_min], n_tags - n_null, replace = TRUE)
+        )
+        sfx_pars <- c(mean_pars[, sfx_cols])
+        sfx <- matrix(sample(sfx_pars, n_tags * n_pairs, replace = TRUE),
+                      nrow = n_tags, ncol = n_pairs)
+        return(cbind(b0, sfx, b1))
+    }
 }
 
 #' Not really supported yet...
