@@ -78,7 +78,7 @@ simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
     }
     n_null <- ceiling(n_tags * p_null)
     if (keep_tag_together) {
-        sfx_cols_to_use <- sample(1:length(sfx_cols), n_pairs, replace = TRUE)
+        sfx_cols_to_use <- sample(sfx_cols, n_pairs, replace = TRUE)
         null_tags <- sample(1:nrow(mean_pars), n_null, replace = TRUE)
         non_null_tags <- sample(which(abs(mean_pars[, ncol(mean_pars)]) >= b1_min), n_tags - n_null, replace = TRUE)
         out <- mean_pars[c(null_tags, non_null_tags), c(1, sfx_cols_to_use, ncol(mean_pars))]
