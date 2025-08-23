@@ -65,6 +65,8 @@ simulate_effects.emp <- function(n_tags, mean_pars, interval = 1,
 #' simulation
 #' @param b1_min The smallest absolute value to allow for treatment effects
 #' @param p_null The proportion of tags with no treatment effect
+#' @param keep_tag_together Sample entire rows of `mean_pars` (instead of
+#' sampling from each column separately)?
 simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
                                         p_null, b1_min = 0,
                                         sfx_cols = NULL,
@@ -215,9 +217,10 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
 #' @param pars Did you already estimate the parameters and save them?
 #' Pass that list in here...
 #' @param sim_design A design matrix to use to generate simulated data
+#' @param full_output Return the full `pars` and `sim` lists, or just
+#' a subset?
+#' @param ... Additional arguments to pass to `simulate_counts()`
 #' @inheritParams simulate_counts
-#' @param ... Additional arguments
-#' to pass to `simulate_counts()`
 #' @export
 simulate_counts_from_dataset <- function(counts, design, pars = NULL,
                                          n_tags,

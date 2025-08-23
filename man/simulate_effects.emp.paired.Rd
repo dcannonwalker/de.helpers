@@ -12,6 +12,7 @@ simulate_effects.emp.paired(
   p_null,
   b1_min = 0,
   sfx_cols = NULL,
+  keep_tag_together = FALSE,
   ...
 )
 }
@@ -29,6 +30,9 @@ with the first column the intercept}
 
 \item{sfx_cols}{The columns of \code{mean_pars} to pool for sample effect
 simulation}
+
+\item{keep_tag_together}{Sample entire rows of \code{mean_pars} (instead of
+sampling from each column separately)?}
 
 \item{...}{Arguments passed to sub-functions}
 }

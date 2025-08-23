@@ -35,8 +35,10 @@ Pass that list in here...}
 \item{effects_options}{A list of options to control the behavior of
 \code{simulate_effects()}}
 
-\item{...}{Additional arguments
-to pass to \code{simulate_counts()}}
+\item{full_output}{Return the full \code{pars} and \code{sim} lists, or just
+a subset?}
+
+\item{...}{Additional arguments to pass to \code{simulate_counts()}}
 }
 \description{
 Fit \code{edgeR} to a given dataset, then use the estimated parameters
