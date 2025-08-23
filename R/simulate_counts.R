@@ -72,6 +72,10 @@ simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
                                         sfx_cols = NULL,
                                         keep_tag_together = FALSE, ...) {
     message("First column of 'mean_pars' should be b0, last column should be b1")
+    if (is.null(sfx_cols)) {
+        message("Assuming all columns except first and last are paired sample effects")
+        sfx_cols <- seq(2, ncol(mean_pars) - 1)
+    }
     n_null <- ceiling(n_tags * p_null)
     if (keep_tag_together) {
         sfx_cols_to_use <- sample(1:length(sfx_cols), n_pairs, replace = TRUE)
@@ -81,10 +85,6 @@ simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
         out[1:n_null, ncol(mean_pars)] <- 0
         return(out)
     } else {
-        if (is.null(sfx_cols)) {
-            message("Pooling all columns except first and last for sample effects")
-            sfx_cols <- seq(2, ncol(mean_pars) - 1)
-        }
         b1_pars <- mean_pars[, ncol(mean_pars)]
         b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
         b1 <- c(
