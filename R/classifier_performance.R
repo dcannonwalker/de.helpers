@@ -29,7 +29,7 @@ fawcett1 <- function(p, tn) {
     ord <- order(p)
     psort <- p[ord]
     tnsort <- tn[ord]
-    R <- matrix(nrow = length(p), ncol = 2)
+    R <- matrix(nrow = length(p), ncol = 2, dimnames = c(NULL, c("fpr", "tpr")))
     .fawcett1_internal_no_recursion(R = R, tnsort = tnsort, N = sum(tn), P = P)
 }
 
