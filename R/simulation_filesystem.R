@@ -199,7 +199,7 @@ read_method_data <- function(
         file.path(root, simulation_id, dataset_id,
                   "effects"), row.names = NULL
     )
-    true_null <- effects[, "b1"] == 0
+    true_null <- effects[, ncol(effects)] == 0
     data.frame(simulation_id = simulation_id, dataset_id = dataset_id,
                true_null = true_null, method_data)
 }
