@@ -30,7 +30,7 @@ fawcett1 <- function(p, tn) {
     psort <- p[ord]
     tnsort <- tn[ord]
     R <- matrix(nrow = length(p), ncol = 2)
-    .fawcett1_internal(R = R, tnsort = tnsort, N = sum(tn), P = P)
+    .fawcett1_internal_no_recursion(R = R, tnsort = tnsort, N = sum(tn), P = P)
 }
 
 #' Do the inside step of fawcett1
@@ -43,6 +43,17 @@ fawcett1 <- function(p, tn) {
     TP <- TP + (1 - tnsort[i])
     R[i, ] <- c(FP / N, TP / P)
     .fawcett1_internal(R, tnsort, i = i + 1, FP, TP, N, P)
+}
+
+.fawcett1_internal_no_recursion <- function(R, tnsort, N, P) {
+    FP <- 0
+    TP <- 0
+    for (i in seq(1, length(tnsort))) {
+        FP <- FP + tnsort[i]
+        TP <- TP + (1 - tnsort[i])
+        R[i, ] <- c(FP / N, TP / P)
+    }
+    R
 }
 
 #' Algorithm 2 from Fawcett 2006; calculate the AUC
