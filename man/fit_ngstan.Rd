@@ -11,6 +11,7 @@ fit_ngstan(
   iter_sampling = 1000,
   parallel_chains = 4,
   grainsize = NULL,
+  save_fit_raw = TRUE,
   ...
 )
 }

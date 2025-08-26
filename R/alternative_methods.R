@@ -135,12 +135,13 @@ fit_ngstan <- function(counts, design,
                        iter_warmup = 1000,
                        iter_sampling = 1000,
                        parallel_chains = 4,
-                       grainsize = NULL, ...) {
+                       grainsize = NULL,
+                       save_fit_raw = TRUE, ...) {
     if (is.null(grainsize)) {
         grainsize <- nrow(counts) / 8
         message(glue::glue(
             "Using grainsize = {grainsize} (nrow(counts) / 8)..."
-            ))
+        ))
     }
 
     y <- ngstan::seqlist$new(
@@ -176,12 +177,26 @@ fit_ngstan <- function(counts, design,
         3, mean)
     prob <- get_contrast_posterior_mean(contrast = 1, comps, d_pmf, beta)
     log2fc <- get_log2fc_posterior_mean(comps, d_pmf, beta)
-    out <- data.frame(
-        tag = y$tags,
-        log2fc = log2fc,
-        logoffset = logoffset,
-        prob = prob,
-        fdr = calc_bfdr(prob)
-    )
+    if (save_fit_raw) {
+        out <- list(
+            fit = data.frame(
+                tag = y$tags,
+                log2fc = log2fc,
+                logoffset = logoffset,
+                prob = prob,
+                fdr = calc_bfdr(prob)
+            ),
+            fit_raw = fit
+        )
+    } else {
+        out <- data.frame(
+            tag = y$tags,
+            log2fc = log2fc,
+            logoffset = logoffset,
+            prob = prob,
+            fdr = calc_bfdr(prob)
+        )
+    }
+
     return(out)
 }

@@ -22,5 +22,10 @@ run_method <- function(simulation_id, dataset_id, method = c("edgeR", "DESeq2", 
         glue::glue("Saving fit to",
                    " {file.path(root, simulation_id, dataset_id, paste0(method, '.qs2'))}")
     )
-    qs2::qs_save(fit, file.path(root, simulation_id, dataset_id, paste0(method, ".qs2")))
+    if (names(fit) == c("fit", "fit_raw")) {
+        qs2::qs_save(fit$fit, file.path(root, simulation_id, dataset_id, paste0(method, ".qs2")))
+        qs2::qs_save(fit$fit_raw, file.path(root, simulation_id, dataset_id, paste0(method, "_raw.qs2")))
+    } else {
+        qs2::qs_save(fit, file.path(root, simulation_id, dataset_id, paste0(method, ".qs2")))
+    }
 }
