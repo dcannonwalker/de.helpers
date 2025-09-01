@@ -8,9 +8,10 @@ prepare_slurm_prompt(
   simulation_id,
   dataset_id,
   method,
-  slurm_script_name,
+  script_name,
   ...,
-  root = "out/simulation_studies"
+  root = "out/simulation_studies",
+  slurm = TRUE
 )
 }
 \description{

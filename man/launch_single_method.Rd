@@ -10,8 +10,9 @@ launch_single_method(
   method,
   ...,
   root = "out/simulation_studies",
-  slurm_script_name = "slurm/single_method_launcher",
-  command = "sbatch"
+  script_name = "slurm/single_method_launcher",
+  command = "sbatch",
+  slurm = TRUE
 )
 }
 \description{
