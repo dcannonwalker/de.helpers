@@ -6,7 +6,7 @@ prepare_slurm_prompt <- function(simulation_id, dataset_id, method, slurm_script
     job_name <- glue::glue("{simulation_id}_{dataset_id}_{method}")
     system_args <- c(glue::glue("-o {file.path(root, simulation_id, 'logs', job_name)}"),
                      glue::glue("--job-name {job_name}"),
-                     "slurm/single_method_launcher",
+                     slurm_script_name,
                      simulation_id,
                      dataset_id,
                      method)
@@ -21,11 +21,12 @@ prepare_slurm_prompt <- function(simulation_id, dataset_id, method, slurm_script
 #' For `ngstan`, the first two elements of `...` will be used
 #' as `iter_warmup` and `iter_sampling`
 #' @export
-launch_single_method <- function(simulation_id, dataset_id, method, ..., root = "out/simulation_studies") {
+launch_single_method <- function(simulation_id, dataset_id, method, ..., root = "out/simulation_studies",
+                                 slurm_script_name = "slurm/single_method_launcher", command = "sbatch") {
     system_args <- prepare_slurm_prompt(simulation_id, dataset_id, method,
-                                        slurm_script_name = "slurm/single_method_launcher",
+                                        slurm_script_name = slurm_script_name,
                                         ..., root = root)
-    system2("sbatch", args = system_args)
+    system2(command = command, args = system_args)
 }
 
 #' Launch model fits for a set of methods for all data sets
@@ -39,13 +40,17 @@ launch_simulation_study <- function(simulation_id,
                                         "limma"
                                     ), ...,
                                     verbose = TRUE,
-                                    root = file.path("out", "simulation_studies")) {
+                                    root = file.path("out", "simulation_studies"),
+                                    slurm_script_name = "slurm/single_method_launcher",
+                                    command = "sbatch") {
     args <- c(...)
     methods <- match.arg(methods, several.ok = TRUE)
     dataset_ids <- read.table(file.path(root, simulation_id, "dataset_ids.txt"), header = TRUE)
     launcher_args <- list(
         simulation_id = simulation_id,
-        root = root
+        root = root,
+        slurm_script_name = slurm_script_name,
+        command = command
     )
     for (id in dataset_ids$dataset_id) {
         launcher_args[["dataset_id"]] <- id
