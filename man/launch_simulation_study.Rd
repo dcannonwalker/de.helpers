@@ -10,7 +10,9 @@ launch_simulation_study(
   methods = c("ngstan", "edgeR", "DESeq2", "limma"),
   ...,
   verbose = TRUE,
-  root = file.path("out", "simulation_studies")
+  root = file.path("out", "simulation_studies"),
+  slurm_script_name = "slurm/single_method_launcher",
+  command = "sbatch"
 )
 }
 \description{
