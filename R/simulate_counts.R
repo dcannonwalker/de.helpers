@@ -83,7 +83,6 @@ simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
         non_null_tags <- sample(which(abs(mean_pars[, ncol(mean_pars)]) >= b1_min), n_tags - n_null, replace = TRUE)
         out <- mean_pars[c(null_tags, non_null_tags), c(1, sfx_cols_to_use, ncol(mean_pars))]
         out[1:n_null, ncol(out)] <- 0
-        return(out)
     } else {
         b1_pars <- mean_pars[, ncol(mean_pars)]
         b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
@@ -94,8 +93,10 @@ simulate_effects.emp.paired <- function(n_tags, n_pairs, mean_pars,
         sfx_pars <- c(mean_pars[, sfx_cols])
         sfx <- matrix(sample(sfx_pars, n_tags * n_pairs, replace = TRUE),
                       nrow = n_tags, ncol = n_pairs)
-        return(cbind(b0, sfx, b1))
+        out <- cbind(b0, sfx, b1)
     }
+    colnames(out) <- c("intercept", paste0("sample", seq(2, n_pairs + 1)), "treatment2")
+    out
 }
 
 #' Not really supported yet...
