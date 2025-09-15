@@ -130,12 +130,15 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
 #' @param iter_sampling Sampling iterations for Stan model
 #' @param parallel_chains Number of parallel chains for Stan model
 #' @param grainsize Grainsize for multi-thread Stan model
+#' @param use_multithread Use the multithread model?
+#' @param save_fit_raw Save the full cmdstan output?
 #' @export
 fit_ngstan <- function(counts, design,
                        iter_warmup = 1000,
                        iter_sampling = 1000,
                        parallel_chains = 4,
                        grainsize = NULL,
+                       use_multithread = FALSE,
                        save_fit_raw = TRUE, ...) {
     if (is.null(grainsize)) {
         grainsize <- nrow(counts) / 8
@@ -162,7 +165,7 @@ fit_ngstan <- function(counts, design,
     y$set_fixed_design(fixed_design = fixed_design)
     y$set_mixture_probabilities(0.8)
     y$initialize_standata()
-    fit <- y$run_model(run_estimation = TRUE, use_multithread = TRUE,
+    fit <- y$run_model(run_estimation = TRUE, use_multithread = use_multithread,
                        grainsize = grainsize,
                        iter_warmup = iter_warmup,
                        iter_sampling = iter_sampling,

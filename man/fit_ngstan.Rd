@@ -11,6 +11,7 @@ fit_ngstan(
   iter_sampling = 1000,
   parallel_chains = 4,
   grainsize = NULL,
+  use_multithread = FALSE,
   save_fit_raw = TRUE,
   ...
 )
@@ -27,6 +28,10 @@ fit_ngstan(
 \item{parallel_chains}{Number of parallel chains for Stan model}
 
 \item{grainsize}{Grainsize for multi-thread Stan model}
+
+\item{use_multithread}{Use the multithread model?}
+
+\item{save_fit_raw}{Save the full cmdstan output?}
 
 \item{...}{Additional parameters to pass on}
 }
