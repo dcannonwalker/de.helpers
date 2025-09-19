@@ -201,7 +201,7 @@ simulate_counts <- function(mean_pars, dispersion_pars, offset_pars,
     }
 
     # nicer row names
-    rownames(counts) <- rownames(effects) <- rownames(dispersions) <-
+    rownames(counts) <- rownames(effects) <- names(dispersions) <-
         paste0("tag", seq(1, n_tags))
 
     return(
