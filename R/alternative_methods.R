@@ -170,7 +170,7 @@ fit_ngstan <- function(counts, design,
                        iter_warmup = iter_warmup,
                        iter_sampling = iter_sampling,
                        parallel_chains = parallel_chains,
-                       modify_in_place = FALSE)
+                       modify_in_place = FALSE, ...)
     draws <- fit$draws()
     comps <- y$standata$comps
     beta <- posterior::extract_variable_array(draws, "beta")
