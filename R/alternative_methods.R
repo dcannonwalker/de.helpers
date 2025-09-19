@@ -126,6 +126,7 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
 
 #' Fit a standard `ngstan` pipeline for two group comparison
 #' @inheritParams fit_edgeR
+#' @param mixture_probability The prior probability of null differential expression
 #' @param iter_warmup Warmup iterations for Stan model
 #' @param iter_sampling Sampling iterations for Stan model
 #' @param parallel_chains Number of parallel chains for Stan model
@@ -133,7 +134,7 @@ fit_limma <- function(counts, design, use_voom = TRUE, ...) {
 #' @param use_multithread Use the multithread model?
 #' @param save_fit_raw Save the full cmdstan output?
 #' @export
-fit_ngstan <- function(counts, design,
+fit_ngstan <- function(counts, design, mixture_probability = 0.8,
                        iter_warmup = 1000,
                        iter_sampling = 1000,
                        parallel_chains = 4,
@@ -163,9 +164,10 @@ fit_ngstan <- function(counts, design,
         y$set_random_design(random_design = random_design)
     }
     y$set_fixed_design(fixed_design = fixed_design)
-    y$set_mixture_probabilities(0.8)
+    y$set_mixture_probabilities(mixture_probability)
     y$initialize_standata()
-    fit <- y$run_model(run_estimation = TRUE, use_multithread = use_multithread,
+    fit <- y$run_model(run_estimation = TRUE,
+                       use_multithread = use_multithread,
                        grainsize = grainsize,
                        iter_warmup = iter_warmup,
                        iter_sampling = iter_sampling,
@@ -189,7 +191,8 @@ fit_ngstan <- function(counts, design,
                 prob = prob,
                 fdr = calc_bfdr(prob)
             ),
-            fit_raw = fit
+            fit_raw = fit,
+            seqlist = y
         )
     } else {
         out <- data.frame(
