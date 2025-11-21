@@ -30,26 +30,38 @@ simulate_effects <- function(n_tags, method = c("emp.paired"), ...) {
     fn <- switch(
         method,
         # dst = simulate_effects.dst,
-        # emp = simulate_effects.emp,
+        emp = simulate_effects.emp,
         emp.paired = simulate_effects.emp.paired
     )
     effects <- fn(n_tags, ...)
     return(effects)
 }
 
-#' Not really supported yet...
+#' In development...
 #' Simulate effects for a simple two-group design
 #' by sampling from estimated coefficients
 #' @inheritParams simulate_effects
-simulate_effects.emp <- function(n_tags, mean_pars, interval = 1,
-                                 min_b1 = log(1.3), ...) {
-    if (is.null(mean_pars))
-        stop("If method is 'emp', mean_pars must be provided")
-    b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
-
-    b1 <- sapply(b0, sample_neighborhood, x = b0, y = mean_pars[, 2],
-                 interval = interval)
-    return(cbind(b0, b1))
+simulate_effects.emp <- function(n_tags, mean_pars,
+                                 p_null, b1_min = 0,
+                                 keep_tag_together = FALSE, ...) {
+    message("'mean_pars' should have 2 columns; first should be b0, second b1")
+    n_null <- ceiling(n_tags * p_null)
+    if (keep_tag_together) {
+        null_tags <- sample(1:nrow(mean_pars), n_null, replace = TRUE)
+        non_null_tags <- sample(which(abs(mean_pars[, ncol(mean_pars)]) >= b1_min), n_tags - n_null, replace = TRUE)
+        out <- mean_pars[c(null_tags, non_null_tags), ]
+        out[1:n_null, ncol(out)] <- 0
+    } else {
+        b1_pars <- mean_pars[, ncol(mean_pars)]
+        b0 <- sample(mean_pars[, 1], n_tags, replace = TRUE)
+        b1 <- c(
+            rep(0, n_null),
+            sample(b1_pars[abs(b1_pars) >= b1_min], n_tags - n_null, replace = TRUE)
+        )
+        out <- cbind(b0, b1)
+    }
+    colnames(out) <- c("intercept", "treatment2")
+    out
 }
 
 #' Simulate effects for a two-group design with paired samples

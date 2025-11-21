@@ -2,11 +2,18 @@
 % Please edit documentation in R/simulate_counts.R
 \name{simulate_effects.emp}
 \alias{simulate_effects.emp}
-\title{Not really supported yet...
+\title{In development...
 Simulate effects for a simple two-group design
 by sampling from estimated coefficients}
 \usage{
-simulate_effects.emp(n_tags, mean_pars, interval = 1, min_b1 = log(1.3), ...)
+simulate_effects.emp(
+  n_tags,
+  mean_pars,
+  p_null,
+  b1_min = 0,
+  keep_tag_together = FALSE,
+  ...
+)
 }
 \arguments{
 \item{n_tags}{The number of tags to simulate}
@@ -14,7 +21,7 @@ simulate_effects.emp(n_tags, mean_pars, interval = 1, min_b1 = log(1.3), ...)
 \item{...}{Arguments passed to sub-functions}
 }
 \description{
-Not really supported yet...
+In development...
 Simulate effects for a simple two-group design
 by sampling from estimated coefficients
 }

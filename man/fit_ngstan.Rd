@@ -7,6 +7,7 @@
 fit_ngstan(
   counts,
   design,
+  mixture_probability = 0.8,
   iter_warmup = 1000,
   iter_sampling = 1000,
   parallel_chains = 4,
@@ -20,6 +21,8 @@ fit_ngstan(
 \item{counts}{A matrix of counts; columns are samples, rows are tags}
 
 \item{design}{A design matrix for the columns of \code{counts}}
+
+\item{mixture_probability}{The prior probability of null differential expression}
 
 \item{iter_warmup}{Warmup iterations for Stan model}
 
